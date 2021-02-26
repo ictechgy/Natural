@@ -21,6 +21,22 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
     
+    lazy var clothesImage: UIImage = {
+        return UIImage()
+    }()
+    lazy var batteryImage: UIImage = {
+        return UIImage()
+    }()
+    lazy var lampImage: UIImage = {
+        return UIImage()
+    }()
+    lazy var medicinesImage: UIImage = {
+        return UIImage()
+    }()
+    lazy var unknownImage: UIImage = {
+        return UIImage()
+    }()
+    
     @IBOutlet weak var mapView: NMFMapView!
     
     override func viewDidLoad() {
@@ -35,6 +51,53 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
         
         mapView.addCameraDelegate(delegate: self)
         
+        viewModel.markers  //on ConcurrentDispatchQueue
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] _ in
+                //지도에 추가된 마커 속성은 메인쓰레드에서 다뤄야 함.
+                //지도에 추가되어있는 마커 삭제
+                self?.markers.forEach { existingMarker in
+                    existingMarker.mapView = nil    //삭제
+                }
+                self?.markers.removeAll()
+            })
+            .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
+            .do(onNext: { [weak self] markerList in
+                
+                //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
+                markerList.forEach { [weak self] markerInfo in
+                    
+                    guard let self = self else {
+                        return
+                    }
+                    
+                    var image: UIImage
+                    switch markerInfo.type {
+                    case .clothes:
+                        image = self.clothesImage
+                    case .battery:
+                        image = self.batteryImage
+                    case .fluorescentLamp:
+                        image = self.lampImage
+                    case .medicines:
+                        image = self.medicinesImage
+                    case .unknown:
+                        image = self.unknownImage
+                    }
+                    
+                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.geoLocation.latitude, lng: markerInfo.geoLocation.longitude), iconImage: NMFOverlayImage(image: image))
+                    
+                    self.markers.append(newMarker)
+                }
+            })
+            .asSignal(onErrorJustReturn: [])    //main thread
+            .emit(onNext: { [weak self] _ in
+                
+                self?.markers.forEach({ [weak self] marker in
+                    marker.mapView = self?.mapView          //지도에 나타내기
+                })
+                
+            }).disposed(by: disposeBag)
     }
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {     //카메라 움직임이 끝난 뒤 - VC가 보여질 때 최초 한번은 작동합니다.(앱을 처음 실행하든 아니든), 중심좌표 변동에 대해서만 작동한다. 회전, 확대, 축소에 대해서는 작동하지 않음.
@@ -48,6 +111,13 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
         //왜냐하면 최초 지도화면에 마커를 띄워줘야 하는 문제때문에.
         //가장 처음 화면에 띄워줄 마커를 가져오기 위해 VC 최초 생성시에만 작동하도록 flag를 두고 viewWillAppear(또는 그 이후 LifeCycle메소드)에 take(1)로 남서쪽 좌표와 북동쪽 좌표를 구해 viewModel에 넘기는 코드가 별도로 필요했을 것. (mapView projection을 통해 화면 bounds와 CGPoint 조합하여 좌표를 구하는 방식이 필요했을 텐데 그러면 뷰가 언제 완전히 그려지는지도 고려했어야 했을 것... 전체적인 순서가 굉장히 복잡해진다. )
         //Android SDK에는 onMapReady()라는 메소드가 존재하기는 했음.
+        let bounds: NMGLatLngBounds = mapView.contentBounds
+        viewModel.southWestCoord.accept(Coordinates(latitude: bounds.southWestLat, longitude: bounds.southWestLng))
+        viewModel.northEastCoord.accept(Coordinates(latitude: bounds.northEastLat, longitude: bounds.northEastLng))
+    }
+    
+    deinit {
+        disposeBag = DisposeBag()
     }
 }
 

@@ -10,5 +10,9 @@ target 'Natural' do
     pod 'RxCocoa'
     pod 'NMapsMap'
     pod 'Firebase/Analytics'
+    pod 'Firebase/Firestore'
+    pod 'FirebaseFirestoreSwift', '~> 7.7.0-beta'
+    pod 'Firebase/Auth'
+    pod 'Firebase/Storage'
 
 end

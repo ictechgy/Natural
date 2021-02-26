@@ -17,7 +17,7 @@ class MapViewModel {
     var cameraCoord: BehaviorRelay<Coordinates> = BehaviorRelay(value: Coordinates(latitude: seoulCoord.latitude, longitude: seoulCoord.longitude))   //기본 좌표 - 서울시
     var southWestCoord: PublishRelay<Coordinates> = PublishRelay()  //검색 제한범위 - 남서쪽 좌표
     var northEastCoord: PublishRelay<Coordinates> = PublishRelay()  //검색 제한범위 - 북동쪽 좌표
-    //지도좌표 중심을 기준으로 정사각형모양으로 검색을 수행할 것인데, View의 크기 자체는 변하지는 않지만 지도 축적이나 지역위치에 따라 좌표값은 계속 바뀌므로 Observable로 두었다. (같은 축적이라고 하더라도 위도에 따라 경도의 차이는 발생한다. 같은 경도 차이여도 아래로 갈 수록 길이는 길어짐.)
+    //지도좌표 중심을 기준으로 직사각형모양으로 검색을 수행할 것인데, View의 크기 자체는 변하지는 않지만 지도 축적이나 지역위치에 따라 좌표값은 계속 바뀌므로 Observable로 두었다. (같은 축적이라고 하더라도 위도에 따라 경도의 차이는 발생한다. 같은 경도 차이여도 아래로 갈 수록 길이는 길어짐.)
     
     //output
     var markers: PublishRelay<[MarkerInfo]> = PublishRelay()
