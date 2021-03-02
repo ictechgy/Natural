@@ -11,16 +11,15 @@ struct MarkerInfo: Codable {
     
     var roadNameAddress: String         //도로명 주소
     var landLodNumberAddress: String    //지번 주소
-    var geoLocation: GeoPoint           //좌표
+    var detailAddress: String           //상세주소
+    var geoHash: String                 //GeoHash 값
+    var latitude: Double                //위도
+    var longitude: Double               //경도
     var managementEntity: String        //관리주체
     var photoRef: String                //사진 참조 주소
     var characteristics: String         //특징
     var type: MarkerType
     
-    struct GeoPoint: Codable {
-        var latitude: Double
-        var longitude: Double
-    }
 }
 
 enum MarkerType: String, Codable {

@@ -11,8 +11,9 @@ target 'Natural' do
     pod 'NMapsMap'
     pod 'Firebase/Analytics'
     pod 'Firebase/Firestore'
-    pod 'FirebaseFirestoreSwift', '~> 7.7.0-beta'
+    pod 'FirebaseFirestoreSwift'
     pod 'Firebase/Auth'
     pod 'Firebase/Storage'
+    pod 'GeoFire/Utils'
 
 end
