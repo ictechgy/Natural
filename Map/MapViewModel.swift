@@ -42,10 +42,9 @@ class MapViewModel {
         
         //중심 좌표값과 반경을 기준으로 데이터 가져오기
         centerCoord.withLatestFrom(northEastCoord) { center, northEast -> Observable<[MarkerInfo]> in
-            let distance: CLLocationDistance = CLLocation(latitude: center.latitude, longitude: center.longitude).distance(from: CLLocation(latitude: northEast.latitude, longitude: northEast.longitude))  //alternative - GFUtils.distance(from:, to:)
-            let radius: Double = distance/2000.0            //반경은 '중심좌표-화면 우상단 좌표'의 2분의 1 값으로 할 것이며 km로 변환하기 위해 1000으로 나눔
-            
-            return MarkerModel.getMarkers(centerCoordinates: center, radiusInKilometers: radius)
+            let distance: CLLocationDistance = CLLocation(latitude: center.latitude, longitude: center.longitude).distance(from: CLLocation(latitude: northEast.latitude, longitude: northEast.longitude))  //alternative - GFUtils.distance(from:, to:) 동일한 결과가 나옴. 단위는 meter
+            let radius: Double = distance/2.0            //반경은 '중심좌표-화면 우상단 좌표'의 2분의 1 값으로 할 것이며 단위는 meter
+            return MarkerModel.getMarkers(centerCoordinates: center, radiusInMeters: radius)
         }.flatMap{ $0 }
         .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .default))
         .catchAndReturn([])

@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LT4-87-M2G" customClass="NMFMapView">
-                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="F7V-JD-SIy">
@@ -30,7 +30,7 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="LT4-87-M2G" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="E4p-ty-Qw0"/>
+                            <constraint firstItem="LT4-87-M2G" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="E4p-ty-Qw0"/>
                             <constraint firstItem="LT4-87-M2G" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Kqy-59-Txh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="LT4-87-M2G" secondAttribute="trailing" id="NDA-Qf-tkq"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LT4-87-M2G" secondAttribute="bottom" id="lG2-ht-WzU"/>

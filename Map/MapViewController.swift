@@ -17,20 +17,20 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
     
-    lazy var clothesImage: UIImage = {
-        return UIImage(systemName: "person.fill")!
+    lazy var clothesImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(systemName: "person.fill")!)
     }()
-    lazy var batteryImage: UIImage = {
-        return UIImage(systemName: "minus.plus.batteryblock.fill")!
+    lazy var batteryImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(systemName: "minus.plus.batteryblock.fill")!)
     }()
-    lazy var lampImage: UIImage = {
-        return UIImage(systemName: "lightbulb.fill")!
+    lazy var lampImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(systemName: "lightbulb.fill")!)
     }()
-    lazy var medicinesImage: UIImage = {
-        return UIImage(systemName: "pills.fill")!
+    lazy var medicinesImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(systemName: "pills.fill")!)
     }()
-    lazy var unknownImage: UIImage = {
-        return UIImage(systemName: "questionmark")!
+    lazy var unknownImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(systemName: "questionmark")!)
     }()
     
     @IBOutlet weak var mapView: NMFMapView!
@@ -62,7 +62,7 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
             })
             .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .do(onNext: { [weak self] markerList in
-                
+                print(markerList)
                 //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 markerList.forEach { [weak self] markerInfo in
                     
@@ -70,7 +70,7 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
                         return
                     }
                     
-                    var image: UIImage
+                    var image: NMFOverlayImage
                     switch markerInfo.type {
                     case .clothes:
                         image = self.clothesImage
@@ -84,7 +84,7 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
                         image = self.unknownImage
                     }
                     
-                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: NMFOverlayImage(image: image))
+                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image)
                     self.markers.append(newMarker)
                 }
             })
@@ -117,6 +117,8 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
         let lat = mapView.cameraPosition.target.lat
         let lng = mapView.cameraPosition.target.lng
         viewModel.centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
+        
+        print("zoomLevel: \(mapView.zoomLevel)")
     }
     
     deinit {
