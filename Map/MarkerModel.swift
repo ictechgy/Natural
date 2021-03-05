@@ -26,31 +26,25 @@ class MarkerModel {
             
             let queries = queryBounds.compactMap { (any) -> Query? in       //최대 9쌍의 bound, 보통 4쌍 - radius를 이용해서 정사각형의 bound들을 만들어오는 듯?
                 guard let bound = any as? GFGeoQueryBounds else { return nil }
-                print("\(bound.startValue) and \(bound.endValue)")
                 return db.collection("Markers")
                     .order(by: "geoHash")
                     .start(at: [bound.startValue])
                     .end(at: [bound.endValue])
             }
-            print("geoHash: \(GFUtils.geoHash(forLocation: CLLocationCoordinate2D(latitude: 37.5033435, longitude: 126.9522254)))")
+            
             var matchingDocs: [QueryDocumentSnapshot] = []
             let dispatchGroup: DispatchGroup = DispatchGroup()
-            db.collection("Markers").document("T6fMgpPcCMCVp0qFHmOT").getDocument { (snapshot, error) in
-                print(snapshot?.data())
-            }
-            db.collection("Markers").order(by: "geoHash").getDocuments { (snap, err) in
-                print("test - \(snap?.count)")
-            }
+            
             for query in queries {
                 dispatchGroup.enter()
                 query.getDocuments { (snapshot: QuerySnapshot?, error: Error?) in   //completion callback
-                    print(snapshot?.count)
+                    
                     guard let documents = snapshot?.documents else {
-                        print("error")
+                        
                         dispatchGroup.leave()
                         return
                     }
-                    print(documents)
+                    
                     for document in documents {
                         let lat = document.data()["latitude"] as? Double ?? 0
                         let lng = document.data()["longitude"] as? Double ?? 0
@@ -58,7 +52,7 @@ class MarkerModel {
                         let centerPoint = CLLocation(latitude: center.latitude, longitude: center.longitude)
                         
                         let distance = GFUtils.distance(from: centerPoint, to: coordinates)
-                        print(distance)
+                        
                         if distance <= radius {
                             matchingDocs.append(document)
                         }
@@ -88,7 +82,7 @@ class MarkerModel {
                     
                     result.append(marker)
                 }
-                print(result)
+                
                 emitter.onNext(result)
                 emitter.onCompleted()
             }

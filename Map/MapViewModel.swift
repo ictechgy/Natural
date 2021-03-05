@@ -41,6 +41,8 @@ class MapViewModel {
 
         
         //중심 좌표값과 반경을 기준으로 데이터 가져오기
+        //VC의 CameraIdle은 좌표값이 변경됐을 때만 콜백되므로 중심좌표가 변하지 않는 줌 확대/축소/회전에는 아래 스트림이 작동하지 않는다. (사람이 실제로 조작할 때에는 중심좌표가 보통은 변하므로 이부분은 신경쓰지 않아도 된다.)
+        //VC NaverMapView가 제공하는 '현재 내 위치 버튼'을 누르면 CameraIdle은 무조건 작동하는 것으로 보인다. 따라서 다른 위치 보고 있다가 위치 버튼을 눌러 내 위치를 보는 경우 마커 업데이트는 자동이다. 다만 트래킹모드만 바뀔 때는 좌표값에 실질적 변화가 없음에도 스트림이 계속 작동한다. 마음같아서는 centerCoord에 distinctUntilChanged()를 붙이고 싶지만 초기에 한번은 목록을 로드해야하는 문제때문에 쉽게 해당 Operator를 붙일 수가 없다.
         centerCoord.withLatestFrom(northEastCoord) { center, northEast -> Observable<[MarkerInfo]> in
             let distance: CLLocationDistance = CLLocation(latitude: center.latitude, longitude: center.longitude).distance(from: CLLocation(latitude: northEast.latitude, longitude: northEast.longitude))  //alternative - GFUtils.distance(from:, to:) 동일한 결과가 나옴. 단위는 meter
             let radius: Double = distance/2.0            //반경은 '중심좌표-화면 우상단 좌표'의 2분의 1 값으로 할 것이며 단위는 meter

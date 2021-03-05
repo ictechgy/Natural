@@ -10,10 +10,11 @@ import RxSwift
 import RxCocoa
 import NMapsMap
 
-class MapViewController: UIViewController, NMFMapViewCameraDelegate {
+class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationManagerDelegate {
     
     var viewModel: MapViewModel = MapViewModel()
     var disposeBag = DisposeBag()
+    var locationManager: CLLocationManager!
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
     
@@ -33,12 +34,19 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
         return NMFOverlayImage(image: UIImage(systemName: "questionmark")!)
     }()
     
-    @IBOutlet weak var mapView: NMFMapView!
+    lazy var mapView: NMFMapView = {
+        naverMapView.mapView
+    }()
+    
+    @IBOutlet weak var naverMapView: NMFNaverMapView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        setUpMapView()
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
         
         viewModel.centerCoord
             .take(1)
@@ -62,7 +70,7 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
             })
             .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .do(onNext: { [weak self] markerList in
-                print(markerList)
+                
                 //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 markerList.forEach { [weak self] markerInfo in
                     
@@ -90,8 +98,7 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
             })
             .asSignal(onErrorJustReturn: [])    //main thread
             .emit(onNext: { [weak self] _ in
-                print("작동")
-                print(self?.markers)
+                
                 self?.markers.forEach({ [weak self] marker in
                     marker.mapView = self?.mapView          //지도에 나타내기
                 })
@@ -118,7 +125,38 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate {
         let lng = mapView.cameraPosition.target.lng
         viewModel.centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
         
-        print("zoomLevel: \(mapView.zoomLevel)")
+    }
+    
+    func setUpMapView() {
+        mapView.minZoomLevel = 12
+        naverMapView.showCompass = true
+        naverMapView.showScaleBar = true
+        naverMapView.showZoomControls = false
+        naverMapView.showIndoorLevelPicker = false
+        naverMapView.showLocationButton = true
+    }
+    
+    //CLLocationManager의 delegate가 설정되는 초기 및 권한이 변경되었을때 호출된다.(설정에서 권한을 변경하고 돌아온 경우에도 호출이 되는 것 확인)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch locationManager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            //locationManager.requestLocation()
+            break
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            fallthrough
+        default:
+            break
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
     }
     
     deinit {

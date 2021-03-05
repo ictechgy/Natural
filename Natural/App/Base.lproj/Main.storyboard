@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LT4-87-M2G" customClass="NMFMapView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LT4-87-M2G" customClass="NMFNaverMapView">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -39,7 +39,7 @@
                     <tabBarItem key="tabBarItem" title="지도" image="map" catalog="system" selectedImage="map.fill" id="xVV-HL-RDE"/>
                     <connections>
                         <outlet property="loadingIndicator" destination="F7V-JD-SIy" id="QGd-zR-gIU"/>
-                        <outlet property="mapView" destination="LT4-87-M2G" id="1BA-g9-3Ho"/>
+                        <outlet property="naverMapView" destination="LT4-87-M2G" id="JsI-sz-gbx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
