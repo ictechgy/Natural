@@ -133,34 +133,49 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationM
         naverMapView.showScaleBar = true
         naverMapView.showZoomControls = false
         naverMapView.showIndoorLevelPicker = false
-        naverMapView.showLocationButton = true
     }
     
     //CLLocationManager의 delegate가 설정되는 초기 및 권한이 변경되었을때 호출된다.(설정에서 권한을 변경하고 돌아온 경우에도 호출이 되는 것 확인)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        naverMapView.showLocationButton = false  //기본 값 보이지 않음으로 설정
+        let alertCkKey = "AlertCkKey"
+        let isWarned = UserDefaults.standard.bool(forKey: alertCkKey)
+        
         switch locationManager.authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
-            //locationManager.requestLocation()
-            break
-        case .notDetermined:
+        case .notDetermined:    //아직 정해지지 않았다면 권한 요청창을 띄운다.
             locationManager.requestWhenInUseAuthorization()
-        case .denied, .restricted:
-            fallthrough
-        default:
+            UserDefaults.standard.setValue(false, forKey: alertCkKey)
+        case .denied, .restricted:  //거부되었거나 제한된 상태라면 알림창을 띄운다. (최초 1회)
+            
+            if !isWarned{
+                let alertController = UIAlertController(title: "권한 거부됨", message: "위치 서비스를 사용할 수 없습니다. 기기의 '설정 - 개인정보 보호'에서 위치 서비스를 허용하여 주십시오.", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                alertController.addAction(okAction)
+                self.present(alertController, animated: true, completion: nil)
+                
+                UserDefaults.standard.setValue(true, forKey: alertCkKey)  //alert 띄웠음을 저장
+            }
+        case .authorizedAlways, .authorizedWhenInUse:
+            naverMapView.showLocationButton = true
+            UserDefaults.standard.setValue(false, forKey: alertCkKey)
+        @unknown default:
+            UserDefaults.standard.setValue(false, forKey: alertCkKey)
             break
         }
     }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-    }
+    //권한이 이미 한번 설정되었어도 설정에 가서 변경하고 올 수 있다는 점 때문에 조금 복잡하게 작성되었다.
+    //이를 테면 '허가를 했다가 설정에서 거부'를 하는 경우 location버튼은 보이면 안되고..
+    //'거부를 하고 alert 본 뒤 설정에서 다른 설정을 했다가 다시 거부'를 하는 경우 다시 최초 한번 alert를 띄워야 한다던지..하는 점들 때문에.
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        let alertController = UIAlertController(title: "오류 발생", message: "사용자의 위치를 불러오던 도중 문제가 발생하였습니다. 다음에 다시 시도하십시오.", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alertController.addAction(ok)
         
+        self.present(alertController, animated: true, completion: nil)
     }
     
     deinit {
         disposeBag = DisposeBag()
     }
 }
-
