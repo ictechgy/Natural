@@ -19,6 +19,7 @@
 		C4BE561125E4134500A83CC2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4BE560F25E4134500A83CC2 /* Main.storyboard */; };
 		C4BE561325E4134700A83CC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4BE561225E4134700A83CC2 /* Assets.xcassets */; };
 		C4BE561625E4134700A83CC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C4BE561425E4134700A83CC2 /* LaunchScreen.storyboard */; };
+		C4D026CA25F4DC9700D55196 /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D026C925F4DC9700D55196 /* BottomSheetView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		C4BE561225E4134700A83CC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C4BE561525E4134700A83CC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C4BE561725E4134700A83CC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C4D026C925F4DC9700D55196 /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		EB24713D16A260307BE8A69C /* Pods-Natural.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Natural.debug.xcconfig"; path = "Target Support Files/Pods-Natural/Pods-Natural.debug.xcconfig"; sourceTree = "<group>"; };
 		F9703BE61965D1A4D81CF317 /* Pods-Natural.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Natural.release.xcconfig"; path = "Target Support Files/Pods-Natural/Pods-Natural.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,6 +84,7 @@
 				C48FB42925E6662B00E3FF26 /* MapViewModel.swift */,
 				C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */,
 				C48FB44325E78F1500E3FF26 /* MarkerModel.swift */,
+				C4D026C925F4DC9700D55196 /* BottomSheetView.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -133,7 +136,7 @@
 				C4BE560225E4134500A83CC2 /* Sources */,
 				C4BE560325E4134500A83CC2 /* Frameworks */,
 				C4BE560425E4134500A83CC2 /* Resources */,
-				2E45D5EAFB7B74ADD6E04CC2 /* [CP] Embed Pods Frameworks */,
+				680AA064A3A592E8FB890DF1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -192,7 +195,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2E45D5EAFB7B74ADD6E04CC2 /* [CP] Embed Pods Frameworks */ = {
+		680AA064A3A592E8FB890DF1 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -242,6 +245,7 @@
 				C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */,
 				C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */,
 				C4BE560A25E4134500A83CC2 /* AppDelegate.swift in Sources */,
+				C4D026CA25F4DC9700D55196 /* BottomSheetView.swift in Sources */,
 				C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */,
 				C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */,
 			);

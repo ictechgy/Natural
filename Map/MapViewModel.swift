@@ -22,6 +22,10 @@ class MapViewModel {
     //output
     var markers: PublishRelay<[MarkerInfo]> = PublishRelay()
     
+    var marker: PublishRelay<MarkerInfo> = PublishRelay()   //BottomSheetView 에서 사용
+    var markerImage: PublishRelay<UIImage?> = PublishRelay()    //BottomSheetView Image용
+    var markerForDetail: BehaviorRelay<MarkerInfo> = BehaviorRelay(value: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown)) //DetailVC에서 사용 할 것으로서 dummy값으로 채워놓았다.
+    
     //마지막 위치 저장용
     let latitudeKey = "latitude"
     let longitudeKey = "longitude"
@@ -52,6 +56,18 @@ class MapViewModel {
         .catchAndReturn([])
         .bind(to: markers)
         .disposed(by: disposeBag)
+        
+        //이미지 불러와서 markerImage에 bind
+        marker.map({ markerInfo -> Observable<UIImage?> in
+            return MarkerModel.getImage(url: markerInfo.photoRef)
+        })
+        .flatMap{ $0 }
+        .catchAndReturn(nil)
+        .bind(to: markerImage)
+        .disposed(by: disposeBag)
+        
+        marker.bind(to: markerForDetail)
+            .disposed(by: disposeBag)
     }
     
     //지도의 마지막 위치를 불러옵니다.

@@ -90,4 +90,12 @@ class MarkerModel {
             return Disposables.create()
         }
     }
+    
+    static func getImage(url: String)-> Observable<UIImage?> {
+        return Observable.create { emitter in
+            
+            
+            return Disposables.create()
+        }
+    }
 }
