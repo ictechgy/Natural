@@ -16,5 +16,6 @@ target 'Natural' do
     pod 'Firebase/Storage'
     pod 'GeoFire/Utils'
     pod 'FloatingPanel'
+    pod 'FirebaseUI/Storage'
 
 end

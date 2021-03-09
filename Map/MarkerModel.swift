@@ -68,6 +68,9 @@ class MarkerModel {
                     let dictionary: [String: Any] = snapshot.data()
                     
                     let marker = MarkerInfo(
+                        id: dictionary["id"] as? String ?? "",
+                        informerId: dictionary["informerId"] as? String ?? "",
+                        informerNickname: dictionary["informerNickname"] as? String ?? "",
                         roadNameAddress: dictionary["roadNameAddress"] as? String ?? "",
                         landLodNumberAddress: dictionary["landLodNumberAddress"] as? String ?? "",
                         detailAddress: dictionary["detailAddress"] as? String ?? "",
@@ -93,7 +96,7 @@ class MarkerModel {
     
     static func getImage(url: String)-> Observable<UIImage?> {
         return Observable.create { emitter in
-            
+            //FirebaseUI(with SDWebImage)를 사용하여 바로 ImageView에 바인딩하는 것도 가능
             
             return Disposables.create()
         }

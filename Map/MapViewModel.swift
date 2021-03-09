@@ -20,11 +20,12 @@ class MapViewModel {
     //지도좌표 중심을 기준으로 radius 검색을 수행할 것인데, View의 크기 자체는 변하지는 않지만 지도 축적이나 지역위치에 따라 좌표값은 계속 바뀌므로 Observable로 두었다. (같은 축적이라고 하더라도 위도에 따라 경도의 차이는 발생한다. 같은 경도 차이여도 저위도로 갈 수록 같은 위도 내 길이는 길어짐.)
     
     //output
-    var markers: PublishRelay<[MarkerInfo]> = PublishRelay()
+    var markers: BehaviorRelay<[MarkerInfo]> = BehaviorRelay(value: [])
     
+    var selectedMarker: MarkerInfo = MarkerInfo.getDummyMarker()
     var marker: PublishRelay<MarkerInfo> = PublishRelay()   //BottomSheetView 에서 사용
     var markerImage: PublishRelay<UIImage?> = PublishRelay()    //BottomSheetView Image용
-    var markerForDetail: BehaviorRelay<MarkerInfo> = BehaviorRelay(value: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown)) //DetailVC에서 사용 할 것으로서 dummy값으로 채워놓았다.
+    var markerForDetail: BehaviorRelay<MarkerInfo> = BehaviorRelay(value: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown)) //BottomSheetView, DetailVC에서 사용 할 것으로서 dummy값으로 채워놓았다.
     
     //마지막 위치 저장용
     let latitudeKey = "latitude"
