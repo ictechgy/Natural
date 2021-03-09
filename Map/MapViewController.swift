@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 import NMapsMap
 
-class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationManagerDelegate {
+class MapViewController: UIViewController {
     
     var viewModel: MapViewModel = MapViewModel()
     var disposeBag = DisposeBag()
@@ -109,21 +109,46 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationM
             }).disposed(by: disposeBag)
         
         //BottomSheetView에 대한 바인딩 - viewModel.marker(PublishRelay)에 아이템을 accept시켜주면 알아서 뷰의 내용이 바뀌도록 합니다.
-        viewModel.marker.subscribe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
-            .do(onNext: { [weak self] markerInfo in
-                //이미지 로드하여 bottomSheetImage에 저장
-                //근데 여기서 로드할게 아니다..
-            })
+        viewModel.marker
             .asSignal(onErrorJustReturn: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown))
             .emit(onNext: { [weak self] markerInfo in
                 guard let self = self else {
                     return
                 }
-                
-                
+                self.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
+                self.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
+                self.bottomSheetView.detailAddress.text = markerInfo.detailAddress
             })
             .disposed(by: disposeBag)
+        
+        viewModel.markerImage
+            .asSignal(onErrorJustReturn: nil)
+            .emit(onNext: { [weak self] (image: UIImage?) in
+                self?.bottomSheetView.imageView.image = image
+            })
+            .disposed(by: disposeBag)
+        
+        bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:)))
     }
+    
+    func setUpMapView() {
+        mapView.minZoomLevel = 12
+        naverMapView.showCompass = true
+        naverMapView.showScaleBar = true
+        naverMapView.showZoomControls = false
+        naverMapView.showIndoorLevelPicker = false
+    }
+    
+    @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
+        
+    }
+    
+    deinit {
+        disposeBag = DisposeBag()
+    }
+}
+
+extension MapViewController: NMFMapViewCameraDelegate {
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {     //카메라 움직임이 끝난 뒤 - VC가 보여질 때 최초 한번은 작동합니다.(앱을 처음 실행하든 아니든), 중심좌표 변동에 대해서만 작동한다. 회전, 확대, 축소에 대해서는 작동하지 않음. 하지만 보통은 지도 확대/축소 시 미세하게나마 중심좌표가 변동된다.
         //직접적인 rx바인딩이 되지 않아서 수동설정(?) - mapView의 latitude, longitude를 zoomLevel과 함께 직접적으로 이용하거나 특정 NMGLatLngBounds를 이용해볼 수도 있을까?
@@ -144,13 +169,9 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationM
         
     }
     
-    func setUpMapView() {
-        mapView.minZoomLevel = 12
-        naverMapView.showCompass = true
-        naverMapView.showScaleBar = true
-        naverMapView.showZoomControls = false
-        naverMapView.showIndoorLevelPicker = false
-    }
+}
+
+extension MapViewController: CLLocationManagerDelegate {
     
     //CLLocationManager의 delegate가 설정되는 초기 및 권한이 변경되었을때 호출된다.(설정에서 권한을 변경하고 돌아온 경우에도 호출이 되는 것 확인)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -192,7 +213,4 @@ class MapViewController: UIViewController, NMFMapViewCameraDelegate, CLLocationM
         self.present(alertController, animated: true, completion: nil)
     }
     
-    deinit {
-        disposeBag = DisposeBag()
-    }
 }
