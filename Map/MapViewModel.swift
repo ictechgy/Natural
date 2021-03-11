@@ -21,11 +21,8 @@ class MapViewModel {
     
     //output
     var markers: BehaviorRelay<[MarkerInfo]> = BehaviorRelay(value: [])
-    
-    var selectedMarker: MarkerInfo = MarkerInfo.getDummyMarker()
-    var marker: PublishRelay<MarkerInfo> = PublishRelay()   //BottomSheetView 에서 사용
-    var markerImage: PublishRelay<UIImage?> = PublishRelay()    //BottomSheetView Image용
-    var markerForDetail: BehaviorRelay<MarkerInfo> = BehaviorRelay(value: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown)) //BottomSheetView, DetailVC에서 사용 할 것으로서 dummy값으로 채워놓았다.
+    var markerImage: BehaviorRelay<UIImage?> = BehaviorRelay(value: nil)    //BottomSheetView, DetailVC Image용
+    var selectedMarker: BehaviorRelay<MarkerInfo> = BehaviorRelay(value: MarkerInfo.getDummyMarker()) //BottomSheetView, DetailVC에서 사용 할 것으로서 dummy값으로 채워놓았다.
     
     //마지막 위치 저장용
     let latitudeKey = "latitude"
@@ -76,11 +73,35 @@ class MapViewModel {
         let lat = UserDefaults.standard.double(forKey: latitudeKey)
         let lng = UserDefaults.standard.double(forKey: longitudeKey)
         
-        guard !lat.isZero || !lng.isZero else {   //해당 값이 없으면 0으로 나옵니다. 둘 중 하나라도 0이 나오면 기본 좌표 값 사용
+        guard !lat.isZero && !lng.isZero else {   //해당 값이 없으면 0으로 나옵니다. 둘 중 하나라도 0이 나오면 기본 좌표 값 사용
             return
         }
         
         centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
+    }
+    
+    //특정 마커가 선택됨 - VC의 [NMFMarker]와 VM의 [MarkerInfo]의 마커 순서는 동일하므로 index로 다룰 수 있다.
+    func markerSelected(index: Int) {
+        //기존에 선택되었었던 마커와 새롭게 선택된 마커가 동일하다면 BottomSheetView의 내용을 바꿀 필요가 없습니다. (이미지 로드도 불필요)
+        Observable.zip(markers, selectedMarker, markerImage) { (list, prevMarker, image) -> Observable<UIImage?> in
+            if list[index].id == prevMarker.id {
+                return Observable.just(image)                               //기존 이미지
+            }else {
+                return MarkerModel.getImage(url: list[index].photoRef)      //새로운 이미지
+            }
+        }.flatMap { $0 }
+        .take(1)
+        .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .default))
+        .bind(to: markerImage)
+        .disposed(by: disposeBag)
+        //마커를 선택하고 선택해제되는 과정에서 BottomSheetView의 ImageView는 매번 nil로 세팅된다. 따라서 이전과 동일한 마커인지와 상관없이 image는 계속 스트림으로 넘겨준다.
+        
+        //이전과 동일한 마커인지와 상관없이 selectedMarker도 갱신해준다. (BottomSheetView의 동작을 위해)
+        markers.map { list in
+            return list[index]
+        }.take(1)
+        .bind(to: selectedMarker)
+        .disposed(by: disposeBag)
     }
     
     deinit {

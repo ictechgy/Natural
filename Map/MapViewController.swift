@@ -70,7 +70,7 @@ class MapViewController: UIViewController {
                 self?.markers.removeAll()   //리스트 비우기
             })
             .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
-            .do(onNext: { [weak self] markerList in
+            .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
                 
                 //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 markerList.forEach { [weak self] markerInfo in
