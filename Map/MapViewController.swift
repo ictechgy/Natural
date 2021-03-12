@@ -18,6 +18,7 @@ class MapViewController: UIViewController {
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
     
+    //이미지에 대한 프로퍼티들
     lazy var clothesImage: NMFOverlayImage = {
         return NMFOverlayImage(image: UIImage(systemName: "person.fill")!)
     }()
@@ -38,6 +39,12 @@ class MapViewController: UIViewController {
         naverMapView.mapView
     }()
     
+    //마커가 눌렸을 때 동작할 핸들러
+    lazy var markerTouchHandler: NMFOverlayTouchHandler = { overlay in
+        
+        return true
+    }
+    
     @IBOutlet weak var naverMapView: NMFNaverMapView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomSheetView: BottomSheetView!
@@ -45,7 +52,8 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setUpMapView()
+        
+        setUpMapView()  //맵뷰에 대한 기본 설정들
         locationManager = CLLocationManager()
         locationManager.delegate = self
         
@@ -59,6 +67,7 @@ class MapViewController: UIViewController {
         
         mapView.addCameraDelegate(delegate: self)
         
+        //위치 변경에 따라 마커 목록을 업데이트 후 지도에 표시
         viewModel.markers  //on ConcurrentDispatchQueue
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] _ in
@@ -73,7 +82,7 @@ class MapViewController: UIViewController {
             .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
                 
                 //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
-                markerList.forEach { [weak self] markerInfo in
+                markerList.enumerated().forEach { [weak self] index, markerInfo in
                     
                     guard let self = self else {
                         return
@@ -94,6 +103,11 @@ class MapViewController: UIViewController {
                     }
                     
                     let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image)
+                    
+                    //TODO: 마커 선택 시 작동할 로직
+                    newMarker.userInfo = ["index" : index]
+                    newMarker.touchHandler = self.markerTouchHandler
+                    
                     self.markers.append(newMarker)
                 }
             })
@@ -108,23 +122,24 @@ class MapViewController: UIViewController {
                 
             }).disposed(by: disposeBag)
         
-        //BottomSheetView에 대한 바인딩 - viewModel.marker(PublishRelay)에 아이템을 accept시켜주면 알아서 뷰의 내용이 바뀌도록 합니다.
-        viewModel.marker
-            .asSignal(onErrorJustReturn: MarkerInfo(roadNameAddress: "", landLodNumberAddress: "", detailAddress: "", geoHash: "", latitude: 0, longitude: 0, managementEntity: "", photoRef: "", characteristics: "", type: .unknown))
-            .emit(onNext: { [weak self] markerInfo in
+        //BottomSheetView에 대한 바인딩
+        viewModel.markerImage
+            .asDriver()
+            .drive(onNext: { [weak self] (image: UIImage?) in
+                self?.bottomSheetView.imageView.image = image
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.selectedMarker
+            .asDriver()
+            .drive(onNext: { [weak self] markerInfo in
                 guard let self = self else {
                     return
                 }
                 self.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
                 self.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
                 self.bottomSheetView.detailAddress.text = markerInfo.detailAddress
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.markerImage
-            .asSignal(onErrorJustReturn: nil)
-            .emit(onNext: { [weak self] (image: UIImage?) in
-                self?.bottomSheetView.imageView.image = image
+                
             })
             .disposed(by: disposeBag)
         

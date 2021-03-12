@@ -98,6 +98,8 @@ class MarkerModel {
         return Observable.create { emitter in
             //FirebaseUI(with SDWebImage)를 사용하여 바로 ImageView에 바인딩하는 것도 가능
             
+            //TODO: 이미지 fetch 로직
+            
             return Disposables.create()
         }
     }

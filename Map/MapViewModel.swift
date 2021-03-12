@@ -55,17 +55,6 @@ class MapViewModel {
         .bind(to: markers)
         .disposed(by: disposeBag)
         
-        //이미지 불러와서 markerImage에 bind
-        marker.map({ markerInfo -> Observable<UIImage?> in
-            return MarkerModel.getImage(url: markerInfo.photoRef)
-        })
-        .flatMap{ $0 }
-        .catchAndReturn(nil)
-        .bind(to: markerImage)
-        .disposed(by: disposeBag)
-        
-        marker.bind(to: markerForDetail)
-            .disposed(by: disposeBag)
     }
     
     //지도의 마지막 위치를 불러옵니다.
@@ -96,7 +85,7 @@ class MapViewModel {
         .disposed(by: disposeBag)
         //마커를 선택하고 선택해제되는 과정에서 BottomSheetView의 ImageView는 매번 nil로 세팅된다. 따라서 이전과 동일한 마커인지와 상관없이 image는 계속 스트림으로 넘겨준다.
         
-        //이전과 동일한 마커인지와 상관없이 selectedMarker도 갱신해준다. (BottomSheetView의 동작을 위해)
+        //이전과 동일한 마커인지와 상관없이 selectedMarker도 갱신해준다. (BottomSheetView의 바인딩에 의한 동작을 위해)
         markers.map { list in
             return list[index]
         }.take(1)

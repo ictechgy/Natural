@@ -9,6 +9,7 @@ import Foundation
 
 struct MarkerInfo: Codable {
     
+    //날짜같은 것도 필요할까?
     var id: String                      //고유 식별자
     var informerId: String              //제보자 id
     var informerNickname: String        //제보자 닉네임
