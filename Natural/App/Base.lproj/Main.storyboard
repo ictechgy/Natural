@@ -19,54 +19,50 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LT4-87-M2G" customClass="NMFNaverMapView">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
-                                <subviews>
-                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zse-R2-qmA" customClass="BottomSheetView" customModule="Natural" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="627" width="414" height="186"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgS-xv-ytD">
-                                                <rect key="frame" x="8" y="23" width="140" height="140"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HM6-1M-bc3">
-                                                <rect key="frame" x="156" y="23" width="250" height="35"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="23"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="roadNameAddress" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8U5-Wp-3RH">
-                                                <rect key="frame" x="156" y="77" width="250" height="23"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="detailAddress" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lag-4k-uKk">
-                                                <rect key="frame" x="156" y="108" width="250" height="23"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <gestureRecognizers/>
-                                        <connections>
-                                            <outlet property="detailAddress" destination="lag-4k-uKk" id="9CT-QV-2bH"/>
-                                            <outlet property="imageView" destination="bgS-xv-ytD" id="ZeB-Lc-MrL"/>
-                                            <outlet property="roadNameAddress" destination="8U5-Wp-3RH" id="Qe1-b9-UTi"/>
-                                            <outlet property="tapGestureRecognizer" destination="8Df-AT-v5o" id="XAv-3c-AVj"/>
-                                            <outlet property="typeLabel" destination="HM6-1M-bc3" id="hCj-LU-uxd"/>
-                                            <outletCollection property="gestureRecognizers" destination="8Df-AT-v5o" appends="YES" id="DxQ-BJ-AUd"/>
-                                        </connections>
-                                    </view>
-                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="F7V-JD-SIy">
-                                <rect key="frame" x="197" y="438" width="20" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zse-R2-qmA" customClass="BottomSheetView" customModule="Natural" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="635.5" width="414" height="177.5"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bgS-xv-ytD">
+                                        <rect key="frame" x="8" y="19" width="140" height="140"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Type" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HM6-1M-bc3">
+                                        <rect key="frame" x="156" y="23" width="250" height="35"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="23"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="roadNameAddress" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8U5-Wp-3RH">
+                                        <rect key="frame" x="156" y="77" width="250" height="23"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="detailAddress" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lag-4k-uKk">
+                                        <rect key="frame" x="156" y="108" width="250" height="23"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outlet property="detailAddress" destination="lag-4k-uKk" id="9CT-QV-2bH"/>
+                                    <outlet property="imageView" destination="bgS-xv-ytD" id="ZeB-Lc-MrL"/>
+                                    <outlet property="roadNameAddress" destination="8U5-Wp-3RH" id="Qe1-b9-UTi"/>
+                                    <outlet property="tapGestureRecognizer" destination="8Df-AT-v5o" id="XAv-3c-AVj"/>
+                                    <outlet property="typeLabel" destination="HM6-1M-bc3" id="hCj-LU-uxd"/>
+                                    <outletCollection property="gestureRecognizers" destination="8Df-AT-v5o" appends="YES" id="DxQ-BJ-AUd"/>
+                                </connections>
+                            </view>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="F7V-JD-SIy">
+                                <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
                                 <color key="color" name="AccentColor"/>
                             </activityIndicatorView>
                         </subviews>
@@ -76,7 +72,13 @@
                             <constraint firstItem="LT4-87-M2G" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="E4p-ty-Qw0"/>
                             <constraint firstItem="LT4-87-M2G" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="Kqy-59-Txh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="LT4-87-M2G" secondAttribute="trailing" id="NDA-Qf-tkq"/>
+                            <constraint firstItem="Zse-R2-qmA" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="TgP-nt-zCf"/>
+                            <constraint firstItem="Zse-R2-qmA" firstAttribute="top" secondItem="F7V-JD-SIy" secondAttribute="bottom" constant="169" id="als-o0-H7r"/>
+                            <constraint firstItem="F7V-JD-SIy" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="bka-Wi-I4m"/>
+                            <constraint firstItem="F7V-JD-SIy" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="iaY-Ug-kcr"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LT4-87-M2G" secondAttribute="bottom" id="lG2-ht-WzU"/>
+                            <constraint firstItem="Zse-R2-qmA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="oIF-g3-vJQ"/>
+                            <constraint firstItem="Zse-R2-qmA" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="prK-qf-r0u"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="4yX-FE-n1O"/>
@@ -94,7 +96,6 @@
         <!--Tab Bar Controller-->
         <scene sceneID="eUf-1R-p68">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SCB-bd-9j5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="0f7-68-2KW" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="OUt-Qd-DPx">
@@ -106,6 +107,7 @@
                         <segue destination="hh1-Se-a6I" kind="relationship" relationship="viewControllers" id="WyG-Dv-T5N"/>
                     </connections>
                 </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SCB-bd-9j5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5.7971014492753632" y="95.758928571428569"/>
         </scene>
@@ -116,13 +118,47 @@
                     <view key="view" contentMode="scaleToFill" id="CcR-Pq-pF0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qy0-WE-gz2">
+                                <rect key="frame" x="20" y="44" width="374" height="374"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Type" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ro9-m6-1SK">
+                                <rect key="frame" x="20" y="438" width="374" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="roadNameAddress" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wnd-rx-Q82">
+                                <rect key="frame" x="20" y="477" width="374" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="detailAddress" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kQT-Rh-48F">
+                                <rect key="frame" x="147" y="509" width="120" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="informerNickname" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wzY-gK-WCd">
+                                <rect key="frame" x="20" y="552" width="374" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="sLZ-lh-A9S"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Tqb-bE-FIO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2857" y="96"/>
+            <point key="canvasLocation" x="2708.6956521739135" y="95.758928571428569"/>
         </scene>
         <!--지도-->
         <scene sceneID="onL-3I-eYr">

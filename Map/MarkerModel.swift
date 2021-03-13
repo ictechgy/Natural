@@ -90,17 +90,37 @@ class MarkerModel {
                 emitter.onCompleted()
             }
             
-            return Disposables.create()
+            return Disposables.create {
+                //cancel networking
+                
+            }
         }
     }
     
-    static func getImage(url: String)-> Observable<UIImage?> {
+    static func getImage(path: String)-> Observable<UIImage?> {
         return Observable.create { emitter in
             //FirebaseUI(with SDWebImage)를 사용하여 바로 ImageView에 바인딩하는 것도 가능
             
-            //TODO: 이미지 fetch 로직
+            //이미지 fetch 로직
+            let storage = Storage.storage()
+            let pathRef = storage.reference(withPath: path)
             
-            return Disposables.create()
+            //최대 허용 용량은 10MB
+            let downloadTask: StorageDownloadTask = pathRef.getData(maxSize: 10 * 1024 * 1024) { (data, error) in
+                
+                if let error = error {
+                    emitter.onError(error)
+                }else {
+                    emitter.onNext(UIImage(data: data!))
+                    emitter.onCompleted()
+                }
+                
+            }
+            
+            return Disposables.create {
+                downloadTask.cancel()
+            }
+            
         }
     }
 }

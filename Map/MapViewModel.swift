@@ -71,12 +71,18 @@ class MapViewModel {
     
     //특정 마커가 선택됨 - VC의 [NMFMarker]와 VM의 [MarkerInfo]의 마커 순서는 동일하므로 index로 다룰 수 있다.
     func markerSelected(index: Int) {
+        let prevImageBehavior: BehaviorRelay<UIImage?> = BehaviorRelay(value: nil)
+        _ = markerImage.take(1)
+            .bind(to: prevImageBehavior)
+        markerImage.accept(nil)  //기존 이미지는 제거, 다른 내용은 바로 새 값 세팅이 가능하므로 굳이 제거하지 않아도 된다.
+        
+        
         //기존에 선택되었었던 마커와 새롭게 선택된 마커가 동일하다면 BottomSheetView의 내용을 바꿀 필요가 없습니다. (이미지 로드도 불필요)
-        Observable.zip(markers, selectedMarker, markerImage) { (list, prevMarker, image) -> Observable<UIImage?> in
-            if list[index].id == prevMarker.id {
+        Observable.zip(markers, selectedMarker, prevImageBehavior) { (list, prevMarker, image) -> Observable<UIImage?> in
+            if (image != nil) && (list[index].id == prevMarker.id) {
                 return Observable.just(image)                               //기존 이미지
             }else {
-                return MarkerModel.getImage(url: list[index].photoRef)      //새로운 이미지
+                return MarkerModel.getImage(path: list[index].photoRef)      //새로운 이미지
             }
         }.flatMap { $0 }
         .take(1)

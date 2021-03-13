@@ -39,12 +39,6 @@ class MapViewController: UIViewController {
         naverMapView.mapView
     }()
     
-    //마커가 눌렸을 때 동작할 핸들러
-    lazy var markerTouchHandler: NMFOverlayTouchHandler = { overlay in
-        
-        return true
-    }
-    
     @IBOutlet weak var naverMapView: NMFNaverMapView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomSheetView: BottomSheetView!
@@ -66,6 +60,7 @@ class MapViewController: UIViewController {
             }.disposed(by: disposeBag) //1번만 실행되고 끝나므로 retain cycle은 고려하지 않음.
         
         mapView.addCameraDelegate(delegate: self)
+        mapView.touchDelegate = self
         
         //위치 변경에 따라 마커 목록을 업데이트 후 지도에 표시
         viewModel.markers  //on ConcurrentDispatchQueue
@@ -81,34 +76,43 @@ class MapViewController: UIViewController {
             .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
             .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
                 
+                //마커 기본 이미지
+                let defaultOverlayImage = NMFOverlayImage()
+                
+                //마커가 눌렸을 때 동작할 핸들러
+                let markerTouchHandler: NMFOverlayTouchHandler = { [weak self] overlay in
+                    guard let index = overlay.userInfo["index"] as? Int else {
+                        return false
+                    }
+                    
+                    self?.viewModel.markerSelected(index: index)
+                    return true //이벤트 소비. 지도로 전파하지 않습니다.
+                }
+                
                 //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 markerList.enumerated().forEach { [weak self] index, markerInfo in
                     
-                    guard let self = self else {
-                        return
-                    }
-                    
-                    var image: NMFOverlayImage
+                    var image: NMFOverlayImage?
                     switch markerInfo.type {
                     case .clothes:
-                        image = self.clothesImage
+                        image = self?.clothesImage
                     case .battery:
-                        image = self.batteryImage
+                        image = self?.batteryImage
                     case .fluorescentLamp:
-                        image = self.lampImage
+                        image = self?.lampImage
                     case .medicines:
-                        image = self.medicinesImage
+                        image = self?.medicinesImage
                     case .unknown:
-                        image = self.unknownImage
+                        image = self?.unknownImage
                     }
                     
-                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image)
+                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image ?? defaultOverlayImage)
                     
-                    //TODO: 마커 선택 시 작동할 로직
-                    newMarker.userInfo = ["index" : index]
-                    newMarker.touchHandler = self.markerTouchHandler
+                    //마커 선택 시 작동할 로직
+                    newMarker.userInfo = ["index" : index]  //각 마커를 구분하는 값 설정
+                    newMarker.touchHandler = markerTouchHandler
                     
-                    self.markers.append(newMarker)
+                    self?.markers.append(newMarker)
                 }
             })
             .asSignal(onErrorJustReturn: [])    //main thread
@@ -133,16 +137,15 @@ class MapViewController: UIViewController {
         viewModel.selectedMarker
             .asDriver()
             .drive(onNext: { [weak self] markerInfo in
-                guard let self = self else {
-                    return
-                }
-                self.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
-                self.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
-                self.bottomSheetView.detailAddress.text = markerInfo.detailAddress
                 
+                self?.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
+                self?.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
+                self?.bottomSheetView.detailAddress.text = markerInfo.detailAddress
+                self?.bottomSheetView.isHidden = false
             })
             .disposed(by: disposeBag)
         
+        bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되나 여기서 바로 다시 숨김 세팅
         bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:)))
     }
     
@@ -155,6 +158,7 @@ class MapViewController: UIViewController {
     }
     
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
+        //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
         
     }
     
@@ -163,7 +167,7 @@ class MapViewController: UIViewController {
     }
 }
 
-extension MapViewController: NMFMapViewCameraDelegate {
+extension MapViewController: NMFMapViewCameraDelegate, NMFMapViewTouchDelegate {
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {     //카메라 움직임이 끝난 뒤 - VC가 보여질 때 최초 한번은 작동합니다.(앱을 처음 실행하든 아니든), 중심좌표 변동에 대해서만 작동한다. 회전, 확대, 축소에 대해서는 작동하지 않음. 하지만 보통은 지도 확대/축소 시 미세하게나마 중심좌표가 변동된다.
         //직접적인 rx바인딩이 되지 않아서 수동설정(?) - mapView의 latitude, longitude를 zoomLevel과 함께 직접적으로 이용하거나 특정 NMGLatLngBounds를 이용해볼 수도 있을까?
@@ -182,6 +186,17 @@ extension MapViewController: NMFMapViewCameraDelegate {
         let lng = mapView.cameraPosition.target.lng
         viewModel.centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
         
+        //카메라 이동이 완료된 경우 BottomSheetView를 숨깁니다.
+        bottomSheetViewHiding()
+    }
+    
+    //오버레이가 아닌 지도부분을 터치한 경우 BottomSheetView를 숨깁니다.
+    func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
+        bottomSheetViewHiding()
+    }
+    
+    func bottomSheetViewHiding() {
+        bottomSheetView.isHidden = true
     }
     
 }
@@ -190,9 +205,9 @@ extension MapViewController: CLLocationManagerDelegate {
     
     //CLLocationManager의 delegate가 설정되는 초기 및 권한이 변경되었을때 호출된다.(설정에서 권한을 변경하고 돌아온 경우에도 호출이 되는 것 확인)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        naverMapView.showLocationButton = false  //기본 값 보이지 않음으로 설정
+        naverMapView.showLocationButton = false  //내 위치 버튼 기본 값 보이지 않음으로 설정
         let alertCkKey = "AlertCkKey"
-        let isWarned = UserDefaults.standard.bool(forKey: alertCkKey)
+        let isWarned = UserDefaults.standard.bool(forKey: alertCkKey)       //권한 거부에 대한 경고 메시지를 기존에 띄웠는지 확인할 것입니다.
         
         switch locationManager.authorizationStatus {
         case .notDetermined:    //아직 정해지지 않았다면 권한 요청창을 띄운다.
