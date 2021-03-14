@@ -78,6 +78,7 @@ class MapViewModel {
         
         
         //기존에 선택되었었던 마커와 새롭게 선택된 마커가 동일하다면 BottomSheetView의 내용을 바꿀 필요가 없습니다. (이미지 로드도 불필요)
+        //다만, 현재 같은지 비교하는 기준에 index라는 다소 불확실한 값을 이용하므로 같은 마커를 선택했다고 하더라도 '지도 이동에 의해 마커 순서가 달라진 경우' 동일함을 캐치해내지 못할 수 있다. 따라서 마커를 구분하는 유일 값인 id를 딕셔너리의 키값으로 이용한다던지 해시 값으로 이용한다던지 하면 좋을 듯 하다. (검색 시간이 별도로 필요하지 않는 O(1) 프로퍼티 이용)
         Observable.zip(markers, selectedMarker, prevImageBehavior) { (list, prevMarker, image) -> Observable<UIImage?> in
             if (image != nil) && (list[index].id == prevMarker.id) {
                 return Observable.just(image)                               //기존 이미지

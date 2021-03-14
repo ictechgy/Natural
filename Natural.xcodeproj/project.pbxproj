@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		28B42EB32F9A59D02E73B1FB /* Pods_Natural.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DA937234CB543D6E84357B5 /* Pods_Natural.framework */; };
+		C40D44A725FD15C600770C6C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44A625FD15C600770C6C /* DetailViewController.swift */; };
 		C48FB42725E5680000E3FF26 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = C48FB42625E5680000E3FF26 /* Keys.plist */; };
 		C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB42925E6662B00E3FF26 /* MapViewModel.swift */; };
 		C48FB42D25E6C44400E3FF26 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		6DA937234CB543D6E84357B5 /* Pods_Natural.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Natural.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C40D44A625FD15C600770C6C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		C48FB42625E5680000E3FF26 /* Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
 		C48FB42925E6662B00E3FF26 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -82,9 +84,10 @@
 			children = (
 				C4BE560D25E4134500A83CC2 /* MapViewController.swift */,
 				C48FB42925E6662B00E3FF26 /* MapViewModel.swift */,
-				C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */,
 				C48FB44325E78F1500E3FF26 /* MarkerModel.swift */,
+				C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */,
 				C4D026C925F4DC9700D55196 /* BottomSheetView.swift */,
+				C40D44A625FD15C600770C6C /* DetailViewController.swift */,
 			);
 			path = Map;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 				C4D026CA25F4DC9700D55196 /* BottomSheetView.swift in Sources */,
 				C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */,
 				C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */,
+				C40D44A725FD15C600770C6C /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

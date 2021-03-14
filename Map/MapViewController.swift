@@ -17,6 +17,16 @@ class MapViewController: UIViewController {
     var locationManager: CLLocationManager!
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
+    lazy var longTappedMarker = {       //지도를 long press 한 경우 나타날 마커
+        let marker = NMFMarker()
+        marker.touchHandler = { [weak self] overlay in
+            
+            
+            return true
+        }
+        
+        
+    }()
     
     //이미지에 대한 프로퍼티들
     lazy var clothesImage: NMFOverlayImage = {
@@ -42,6 +52,7 @@ class MapViewController: UIViewController {
     @IBOutlet weak var naverMapView: NMFNaverMapView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomSheetView: BottomSheetView!
+    @IBOutlet weak var longPressRecognizer: UILongPressGestureRecognizer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -147,6 +158,8 @@ class MapViewController: UIViewController {
         
         bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되나 여기서 바로 다시 숨김 세팅
         bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:)))
+        
+        longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:)))
     }
     
     func setUpMapView() {
@@ -159,6 +172,21 @@ class MapViewController: UIViewController {
     
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
         //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
+        
+        let detailVC = (storyboard ?? UIStoryboard.init(name: "Main", bundle: Bundle.main)).instantiateViewController(identifier: "DetailVC") { coder in
+            return DetailViewController(coder: coder)
+        }
+        
+        detailVC.viewModel = self.viewModel
+        self.navigationController?.pushViewController(detailVC, animated: true)
+        
+    }
+    
+    @objc func didTapMapLong(sender: UILongPressGestureRecognizer) {
+        //지도를 꾹 누른 경우 호출
+        let touchedPoint: CGPoint = sender.location(in: sender.view)
+        let coord: NMGLatLng = mapView.projection.latlng(from: touchedPoint)
+        
         
     }
     
