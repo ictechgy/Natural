@@ -17,16 +17,6 @@ class MapViewController: UIViewController {
     var locationManager: CLLocationManager!
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
-    lazy var longTappedMarker = {       //지도를 long press 한 경우 나타날 마커
-        let marker = NMFMarker()
-        marker.touchHandler = { [weak self] overlay in
-            
-            
-            return true
-        }
-        
-        
-    }()
     
     //이미지에 대한 프로퍼티들
     lazy var clothesImage: NMFOverlayImage = {
@@ -47,6 +37,35 @@ class MapViewController: UIViewController {
     
     lazy var mapView: NMFMapView = {
         naverMapView.mapView
+    }()
+    
+    lazy var longTappedMarker: NMFMarker = {       //지도를 long press 한 경우 나타날 마커
+        let marker = NMFMarker()
+        return marker
+    }()
+    
+    lazy var longTappedInfoWindow: NMFInfoWindow = {        //longTappedMarker와 같이 보일 infoWindow
+        let window = NMFInfoWindow()
+        let dataSource = NMFInfoWindowDefaultTextSource()
+        dataSource.title = "이 위치에 수거함 추가"
+        window.dataSource = dataSource
+        
+        window.touchHandler = { [weak self] overlay in
+            //window 터치 시
+            guard let vc = self?.storyboard?.instantiateViewController(identifier: "AddVC", creator: { coder in
+                return AddViewController(coder: coder)
+            }) else {
+                return false
+            }
+            
+            vc.viewModel = self?.viewModel
+            self?.navigationController?.pushViewController(vc, animated: true)
+            
+            return true //이벤트 소비
+        }
+        
+        
+        return window
     }()
     
     @IBOutlet weak var naverMapView: NMFNaverMapView!
