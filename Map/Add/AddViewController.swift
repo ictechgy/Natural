@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import RxSwift
 
 class AddViewController: UIViewController {
     
-    var viewModel: MapViewModel!
+    var viewModel: AddViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -35,35 +35,39 @@ class MapViewController: UIViewController {
         return NMFOverlayImage(image: UIImage(systemName: "questionmark")!)
     }()
     
+    lazy var longTappedMarkerImage: NMFOverlayImage = {
+        return NMF_MARKER_IMAGE_BLUE
+    }()
+    
     lazy var mapView: NMFMapView = {
         naverMapView.mapView
     }()
     
     lazy var longTappedMarker: NMFMarker = {       //지도를 long press 한 경우 나타날 마커
         let marker = NMFMarker()
+        marker.iconImage = longTappedMarkerImage
         return marker
     }()
     
     lazy var longTappedInfoWindow: NMFInfoWindow = {        //longTappedMarker와 같이 보일 infoWindow
         let window = NMFInfoWindow()
-        let dataSource = NMFInfoWindowDefaultTextSource()
+        let dataSource = NMFInfoWindowDefaultTextSource.data()
         dataSource.title = "이 위치에 수거함 추가"
         window.dataSource = dataSource
         
         window.touchHandler = { [weak self] overlay in
             //window 터치 시
-            guard let vc = self?.storyboard?.instantiateViewController(identifier: "AddVC", creator: { coder in
+            guard let addVC: AddViewController = self?.storyboard?.instantiateViewController(identifier: "AddVC", creator: { coder in
                 return AddViewController(coder: coder)
-            }) else {
+            }), let marker: NMFMarker = window.marker else {
                 return false
             }
             
-            vc.viewModel = self?.viewModel
-            self?.navigationController?.pushViewController(vc, animated: true)
+            addVC.viewModel = AddViewModel(position: marker.position)
+            self?.navigationController?.pushViewController(addVC, animated: true)
             
             return true //이벤트 소비
         }
-        
         
         return window
     }()
@@ -203,10 +207,15 @@ class MapViewController: UIViewController {
     
     @objc func didTapMapLong(sender: UILongPressGestureRecognizer) {
         //지도를 꾹 누른 경우 호출
+        longTappedMarker.mapView = nil
+        longTappedInfoWindow.close()
+        
         let touchedPoint: CGPoint = sender.location(in: sender.view)
         let coord: NMGLatLng = mapView.projection.latlng(from: touchedPoint)
         
-        
+        longTappedMarker.position = coord
+        longTappedMarker.mapView = self.mapView
+        longTappedInfoWindow.open(with: longTappedMarker)
     }
     
     deinit {
@@ -234,16 +243,18 @@ extension MapViewController: NMFMapViewCameraDelegate, NMFMapViewTouchDelegate {
         viewModel.centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
         
         //카메라 이동이 완료된 경우 BottomSheetView를 숨깁니다.
-        bottomSheetViewHiding()
+        hideViewsAfterUserInteraction()
     }
     
     //오버레이가 아닌 지도부분을 터치한 경우 BottomSheetView를 숨깁니다.
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-        bottomSheetViewHiding()
+        hideViewsAfterUserInteraction()
     }
     
-    func bottomSheetViewHiding() {
+    func hideViewsAfterUserInteraction() {
         bottomSheetView.isHidden = true
+        longTappedMarker.mapView = nil
+        longTappedInfoWindow.close()
     }
     
 }
