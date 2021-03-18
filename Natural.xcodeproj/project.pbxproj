@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		28B42EB32F9A59D02E73B1FB /* Pods_Natural.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DA937234CB543D6E84357B5 /* Pods_Natural.framework */; };
+		C40A7BCC260254E8001EDDD4 /* AddModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40A7BCB260254E8001EDDD4 /* AddModel.swift */; };
 		C40D44A725FD15C600770C6C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44A625FD15C600770C6C /* DetailViewController.swift */; };
 		C40D44AB25FFAAAC00770C6C /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44AA25FFAAAC00770C6C /* AddViewController.swift */; };
 		C40D44AF25FFAF5A00770C6C /* AddViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		6DA937234CB543D6E84357B5 /* Pods_Natural.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Natural.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C40A7BCB260254E8001EDDD4 /* AddModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddModel.swift; sourceTree = "<group>"; };
 		C40D44A625FD15C600770C6C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		C40D44AA25FFAAAC00770C6C /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewModel.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 			children = (
 				C40D44AA25FFAAAC00770C6C /* AddViewController.swift */,
 				C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */,
+				C40A7BCB260254E8001EDDD4 /* AddModel.swift */,
 			);
 			path = Add;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C40A7BCC260254E8001EDDD4 /* AddModel.swift in Sources */,
 				C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */,
 				C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */,
 				C40D44AB25FFAAAC00770C6C /* AddViewController.swift in Sources */,

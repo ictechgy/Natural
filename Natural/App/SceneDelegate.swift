@@ -67,7 +67,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         
-        guard let retrievedKey = plist["NMFClientId"] else {
+        guard let retrievedKey = plist["ClientId"] else {
             return
         }
         
