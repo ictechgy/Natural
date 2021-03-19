@@ -63,11 +63,10 @@ class AddModel {
             
             let task = urlSession.dataTask(with: urlRequest) { data, response, error in
                 
-                guard let data = data else {
+                guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                     emitter.onError(error ?? AddError.retrieveDataError)
                     return
                 }
-                
                 
                 
             }
