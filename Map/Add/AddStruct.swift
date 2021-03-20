@@ -64,6 +64,7 @@ struct ReverseGeocodeResult: Codable {
             var addition2: Addition
             var addition3: Addition
             var addition4: Addition
+            var name: String?
             var coords: Coords
             
             struct Addition: Codable {
@@ -73,4 +74,11 @@ struct ReverseGeocodeResult: Codable {
             
         }
     }
+}
+
+struct AddressInfo {
+    var roadNameAddress: String
+    var landLodNumberAddress: String
+    var legalAddress: String
+    var administrativeAddress: String
 }

@@ -18,7 +18,7 @@ class AddModel {
         getKeys()
     }
     
-    func getKeys() {
+    private func getKeys() {
         if clientId == nil || clientSecret == nil {
             guard let path = Bundle.main.path(forResource: "Keys", ofType: "plist"),
                   let data = try? Data(contentsOf: URL(fileURLWithPath: path)),
@@ -31,7 +31,7 @@ class AddModel {
         }
     }
     
-    func coordToAddr(latitude: Double, longitude: Double)-> Observable<Void> {
+    func coordToAddr(latitude: Double, longitude: Double)-> Observable<AddressInfo> {
         getKeys()
         
         return Observable.create { emitter in
@@ -68,6 +68,16 @@ class AddModel {
                     return
                 }
                 
+                let decoder = JSONDecoder()
+                
+                do {
+                    let result = try decoder.decode(ReverseGeocodeResult.self, from: data)
+                    let addressInfo = self.parseReverseGeoResult(target: result)
+                    emitter.onNext(addressInfo)
+                    emitter.onCompleted()
+                } catch {
+                    emitter.onError(error)
+                }
                 
             }
             
@@ -77,6 +87,49 @@ class AddModel {
                 task.cancel()
             }
         }
+    }
+    
+    func parseReverseGeoResult(target: ReverseGeocodeResult)-> AddressInfo {
+        
+        var roadAddr: String = ""
+        var addr: String = ""
+        var legalAddr: String = ""
+        var admAddr: String = ""
+        
+        //target 내 result 순서는 도로명,지번,법정동,행정동 순서
+        target.results.forEach { result in  //result로 넘어오는 것은 도로명,지번,법정동,행정동에 해당하는 정보를 가진 각각의 개별 객체
+            
+            let prefix: String = conformToForm(str: result.region.area1.name) + conformToForm(str: result.region.area2.name)
+                + conformToForm(str: result.region.area3.name) + conformToForm(str: result.region.area4.name)
+            
+            switch result.name {
+            case "roadaddr":
+                roadAddr = prefix + conformToForm(str: result.land?.name) + conformToForm(str: result.land?.number1) + conformToForm(str: result.land?.addition0.value)
+            case "addr":
+                addr = prefix +
+            case "legalcode":
+                legalAddr = prefix +
+            case "admcode":
+                admAddr = prefix +
+            default:
+                break
+            }
+        }
+        
+        return AddressInfo(roadNameAddress: roadAddr, landLodNumberAddress: addr, legalAddress: legalAddr, administrativeAddress: admAddr)
+    }
+    
+    private func conformToForm(str: String?)-> String {
+        switch str {
+        case .none:
+            return ""
+        case .some(let unWrappedStr):
+            switch unWrappedStr.count {
+            case 0:
+                return unWrappedStr
+            default:
+                return "\(unWrappedStr) "   //뒤에 띄어쓰기 하나 포함하여 return
+            }
     }
     
     enum AddError: Error {
