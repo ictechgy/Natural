@@ -11,8 +11,8 @@ import RxSwift
 class AddModel {
     
     static let shared: AddModel = AddModel()
-    var clientId: String?
-    var clientSecret: String?
+    private var clientId: String?
+    private var clientSecret: String?
     
     private init() {
         getKeys()
@@ -89,7 +89,13 @@ class AddModel {
         }
     }
     
-    func parseReverseGeoResult(target: ReverseGeocodeResult)-> AddressInfo {
+    private func parseReverseGeoResult(target: ReverseGeocodeResult)-> AddressInfo {
+        
+        if target.status.code == 3 {    //검색은 정상적으로 수행됐으나 결과 값이 존재하지 않는 경우
+            return AddressInfo(roadNameAddress: "", landLodNumberAddress: "")
+        }
+        
+        //status code가 0인 경우(한 개 이상의 결과를 받아온 상태)
         
         var roadAddr: String = ""
         var addr: String = ""
@@ -97,28 +103,44 @@ class AddModel {
         var admAddr: String = ""
         
         //target 내 result 순서는 도로명,지번,법정동,행정동 순서
-        target.results.forEach { result in  //result로 넘어오는 것은 도로명,지번,법정동,행정동에 해당하는 정보를 가진 각각의 개별 객체
+        target.results.forEach { result in  //result로 넘어오는 것은 도로명,지번,법정동,행정동에 해당하는 정보를 가진 각각의 개별 프로퍼티
             
             let prefix: String = conformToForm(str: result.region.area1.name) + conformToForm(str: result.region.area2.name)
                 + conformToForm(str: result.region.area3.name) + conformToForm(str: result.region.area4.name)
+            //행정구역 단위명칭 prefix값
             
             switch result.name {
             case "roadaddr":
                 roadAddr = prefix + conformToForm(str: result.land?.name) + conformToForm(str: result.land?.number1) + conformToForm(str: result.land?.addition0.value)
+                //도로명 + 건물번호 + 건물이름
             case "addr":
-                addr = prefix +
+                if let number1 = result.land?.number1 ,let number2 = result.land?.number2, !number2.isEmpty {
+                    addr = prefix + number1 + "-" + number2
+                }else {
+                    addr = prefix + conformToForm(str: result.land?.number1)
+                }
+                //토지 본번호 + 토지 부번호(부번호 없는 경우도 있음)
             case "legalcode":
-                legalAddr = prefix +
+                legalAddr = prefix
             case "admcode":
-                admAddr = prefix +
+                admAddr = prefix
             default:
-                break
+                return
             }
         }
         
-        return AddressInfo(roadNameAddress: roadAddr, landLodNumberAddress: addr, legalAddress: legalAddr, administrativeAddress: admAddr)
+        //해안선, 신규택지의 경우 도로명이나 지번주소가 없을 수 있습니다. 이 경우 법정동이나 행정동을 사용합니다. (법정동이 있다면 법정동 먼저)
+        if roadAddr.isEmpty {
+            roadAddr = legalAddr.isEmpty ? admAddr : legalAddr
+        }
+        if addr.isEmpty {
+            addr = legalAddr.isEmpty ? admAddr : legalAddr
+        }
+        
+        return AddressInfo(roadNameAddress: roadAddr, landLodNumberAddress: addr)
     }
     
+    //각각의 구역단위 명칭 사이에 띄어쓰기를 넣어주기 위한 메소드
     private func conformToForm(str: String?)-> String {
         switch str {
         case .none:
@@ -130,6 +152,7 @@ class AddModel {
             default:
                 return "\(unWrappedStr) "   //뒤에 띄어쓰기 하나 포함하여 return
             }
+        }
     }
     
     enum AddError: Error {

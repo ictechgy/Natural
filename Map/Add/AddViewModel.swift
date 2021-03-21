@@ -27,7 +27,12 @@ class AddViewModel {
     init(position: NMGLatLng) {
         
         //position을 가지고 주소 값 가져오기
-        
+        AddModel.shared.coordToAddr(latitude: position.lat, longitude: position.lng)
+            .take(1)
+            .subscribe(onNext: { addressInfo in
+                
+            })
+            .disposed(by: disposeBag)
     }
     
     

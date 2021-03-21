@@ -7,6 +7,7 @@
 
 import Foundation
 
+//서버에서 주는 Json 데이터를 저장할 구조체(해당 JSON데이터 구조 그대로 선언함)
 struct ReverseGeocodeResult: Codable {
     
     var status: Status
@@ -79,6 +80,4 @@ struct ReverseGeocodeResult: Codable {
 struct AddressInfo {
     var roadNameAddress: String
     var landLodNumberAddress: String
-    var legalAddress: String
-    var administrativeAddress: String
 }

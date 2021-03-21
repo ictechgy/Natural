@@ -64,7 +64,8 @@ class MapViewController: UIViewController {
             }
             
             addVC.viewModel = AddViewModel(position: marker.position)
-            self?.navigationController?.pushViewController(addVC, animated: true)
+            addVC.modalPresentationStyle = .fullScreen
+            self?.present(addVC, animated: true, completion: nil)
             
             return true //이벤트 소비
         }
