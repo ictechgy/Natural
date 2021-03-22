@@ -56,13 +56,16 @@ class AddModel {
                 emitter.onError(AddError.urlError)
                 return Disposables.create()
             }
+            print(url.absoluteURL)
             
             var urlRequest = URLRequest(url: url)
             urlRequest.addValue(idValue, forHTTPHeaderField: "X-NCP-APIGW-API-KEY-ID")
             urlRequest.addValue(secretValue, forHTTPHeaderField: "X-NCP-APIGW-API-KEY")
             
             let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-                
+                print(data)
+                print(response)
+                print(error)
                 guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                     emitter.onError(error ?? AddError.retrieveDataError)
                     return
