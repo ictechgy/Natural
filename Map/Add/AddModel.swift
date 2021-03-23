@@ -46,7 +46,7 @@ class AddModel {
             let urlSession = URLSession(configuration: .ephemeral)
             
             var urlComponents = URLComponents(string: "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc")
-            let coords = URLQueryItem(name: "coords", value: "\(latitude),\(longitude)")
+            let coords = URLQueryItem(name: "coords", value: "\(longitude),\(latitude)")    //경도-위도 순서로
             let orders = URLQueryItem(name: "orders", value: "roadaddr,addr,legalcode,admcode") //결과는 도로명,지번,법정동,행정동 순서로
             let output = URLQueryItem(name: "output", value: "json")
             
@@ -56,16 +56,13 @@ class AddModel {
                 emitter.onError(AddError.urlError)
                 return Disposables.create()
             }
-            print(url.absoluteURL)
             
             var urlRequest = URLRequest(url: url)
             urlRequest.addValue(idValue, forHTTPHeaderField: "X-NCP-APIGW-API-KEY-ID")
             urlRequest.addValue(secretValue, forHTTPHeaderField: "X-NCP-APIGW-API-KEY")
             
             let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-                print(data)
-                print(response)
-                print(error)
+
                 guard let data = data, let response = response as? HTTPURLResponse, response.statusCode == 200 else {
                     emitter.onError(error ?? AddError.retrieveDataError)
                     return

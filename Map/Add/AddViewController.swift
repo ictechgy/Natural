@@ -21,6 +21,10 @@ class AddViewController: UIViewController {
     @IBOutlet weak var characterField: UITextField!
     @IBOutlet weak var manageField: UITextField!
     @IBOutlet weak var addButton: UIButton!
+    
+    let pickerView: UIPickerView = UIPickerView()
+    var selected: String = ""
+    lazy var pickerData: [String] = viewModel.kindOfMarkers
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +43,7 @@ class AddViewController: UIViewController {
             .disposed(by: disposeBag)
         
         bindOtherFields()
+        setUpPickerView()
     }
     
     private func bindAddressFieldsEnabled() {
@@ -96,8 +101,43 @@ class AddViewController: UIViewController {
             .disposed(by: disposeBag)
         
         viewModel.addButtonEnabled.distinctUntilChanged()
-            .bind(to: addButton.rx.isEnabled)
+            .asDriver(onErrorJustReturn: false)
+            .drive { [weak self] isEnabled in
+                self?.addButton.isEnabled = isEnabled
+                
+                var bgColor: UIColor
+                if isEnabled {
+                    bgColor = .systemGreen
+                }else {
+                    bgColor = .systemGray
+                }
+                
+                self?.addButton.backgroundColor = bgColor
+            }
             .disposed(by: disposeBag)
+    }
+    
+    func setUpPickerView() {
+        pickerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 220)
+        //pickerView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        
+        let pickerToolbar: UIToolbar = UIToolbar()
+        pickerToolbar.barStyle = .default
+        pickerToolbar.isTranslucent = true
+        pickerToolbar.backgroundColor = .lightGray
+        pickerToolbar.sizeToFit()
+        
+        let btnOk = UIBarButtonItem(title: "확인", style: .done, target: self, action: <#T##Selector?#>)
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let btnCancel = UIBarButtonItem(title: "취소", style: .done, target: self, action: <#T##Selector?#>)
+        pickerToolbar.setItems([btnCancel, space, btnOk], animated: true)
+        pickerToolbar.isUserInteractionEnabled = true
+        
+        typeField.inputView = pickerView
+        typeField.inputAccessoryView = pickerToolbar
+        
+        
     }
 
     /*
