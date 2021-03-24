@@ -24,7 +24,6 @@ class AddViewController: UIViewController {
     
     let pickerView: UIPickerView = UIPickerView()
     var selected: String = ""
-    lazy var pickerData: [String] = viewModel.kindOfMarkers
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,8 +118,17 @@ class AddViewController: UIViewController {
     
     func setUpPickerView() {
         pickerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 220)
-        //pickerView.rx.setDelegate(self).disposed(by: disposeBag)
         
+        _ = viewModel.kindOfMarkersObservable
+            .bind(to: pickerView.rx.itemTitles) { _, element in
+                return element
+            }
+        pickerView.rx.itemSelected
+            .subscribe(onNext: { [weak self] row, _ in
+                self?.selected = self?.viewModel.kindOfMarkers[row] ?? ""
+            })
+            .disposed(by: disposeBag)
+        //selected 프로퍼티도 Observable(Relay)로 선언해서 구현 할 수도 있고.. 방법은 정말 많다.
         
         let pickerToolbar: UIToolbar = UIToolbar()
         pickerToolbar.barStyle = .default
@@ -128,9 +136,20 @@ class AddViewController: UIViewController {
         pickerToolbar.backgroundColor = .lightGray
         pickerToolbar.sizeToFit()
         
-        let btnOk = UIBarButtonItem(title: "확인", style: .done, target: self, action: <#T##Selector?#>)
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
-        let btnCancel = UIBarButtonItem(title: "취소", style: .done, target: self, action: <#T##Selector?#>)
+        let btnOk = UIBarButtonItem(title: "확인", style: .done, target: nil, action: nil)
+        btnOk.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.typeField.rx.text
+            })
+            .disposed(by: disposeBag)
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let btnCancel = UIBarButtonItem(title: "취소", style: .done, target: nil, action: nil)
+        btnCancel.rx.tap
+            .subscribe(onNext: { [weak self] in
+                
+            })
+            .disposed(by: disposeBag)
+        
         pickerToolbar.setItems([btnCancel, space, btnOk], animated: true)
         pickerToolbar.isUserInteractionEnabled = true
         
@@ -151,3 +170,5 @@ class AddViewController: UIViewController {
     */
 
 }
+
+

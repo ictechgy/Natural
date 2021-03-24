@@ -12,7 +12,10 @@ import NMapsMap
 
 class AddViewModel {
     
-    let kindOfMarkers = ["헌 옷 수거함", "폐건전지 수거함", "폐형광등 수거함", "폐의약품 수거함"]
+    let kindOfMarkers: [String] = ["헌 옷 수거함", "폐건전지 수거함", "폐형광등 수거함", "폐의약품 수거함"]
+    var kindOfMarkersObservable: Observable<[String]> {
+        return Observable.just(kindOfMarkers)
+    }
     
     var typeRelay: BehaviorRelay = BehaviorRelay(value: "")
     var roadAddressRelay: BehaviorRelay = BehaviorRelay(value: "")
