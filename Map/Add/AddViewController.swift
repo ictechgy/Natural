@@ -116,20 +116,21 @@ class AddViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    func setUpPickerView() {
+    private func setUpPickerView() {
         pickerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 220)
         
-        _ = viewModel.kindOfMarkersObservable
+        _ = viewModel.kindOfMarkersObservable   //Observable.just
             .bind(to: pickerView.rx.itemTitles) { _, element in
                 return element
             }
         pickerView.rx.itemSelected
             .subscribe(onNext: { [weak self] row, _ in
-                self?.selected = self?.viewModel.kindOfMarkers[row] ?? ""
+                self?.selected = self?.viewModel.kindOfMarkers[row] ?? ""   //kindOfMarkers List
             })
             .disposed(by: disposeBag)
         //selected 프로퍼티도 Observable(Relay)로 선언해서 구현 할 수도 있고.. 방법은 정말 많다.
         
+        //pickerView 위에 조그맣게 보일 툴바
         let pickerToolbar: UIToolbar = UIToolbar()
         pickerToolbar.barStyle = .default
         pickerToolbar.isTranslucent = true
@@ -139,14 +140,17 @@ class AddViewController: UIViewController {
         let btnOk = UIBarButtonItem(title: "확인", style: .done, target: nil, action: nil)
         btnOk.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.typeField.rx.text
+                self?.typeField.text = self?.selected
+                self?.typeField.resignFirstResponder()
+                self?.selected = ""
             })
             .disposed(by: disposeBag)
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)  //여백공간
         let btnCancel = UIBarButtonItem(title: "취소", style: .done, target: nil, action: nil)
         btnCancel.rx.tap
             .subscribe(onNext: { [weak self] in
-                
+                self?.typeField.resignFirstResponder()
+                self?.selected = ""
             })
             .disposed(by: disposeBag)
         
