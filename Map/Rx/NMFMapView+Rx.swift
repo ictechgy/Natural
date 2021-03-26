@@ -60,10 +60,37 @@ class RxNMFMapViewCameraDelegateProxy: DelegateProxy<NMFMapView, NMFMapViewCamer
         
         self.cameraDelegate = delegate      //nil로 설정 될 수도, 아닐수도.
         
-        //addCameraDelegate(delegate: )로 설정 시 strong reference로 참조하게 되려나? 그러면 어디선가 removeCameraDelegate(delegate: )를 해줘야 할지도?. 내부적으로 delegate가 어떻게 설정되는지 알아야 할거 같은데.. 보통은 weak ref이기는 하지만. -> 그래서 일단은 위와같이 케이스를 나누어 처리
+        //addCameraDelegate(delegate: )로 설정 시 strong reference로 참조하게 되려나? 그러면 어디선가 removeCameraDelegate(delegate: )를 해줘야 할지도? 내부적으로 delegate가 어떻게 설정되는지 알아야 할거 같은데.. 보통은 weak ref이기는 하지만. -> 그래서 일단은 위와같이 케이스를 나누어 처리
         //어디선가 내가 따로 removeDelegate(delegate: ) 또는 setCurrentDelegate(nil, to: NMFMapView)를 호출해줘야 하려나..?
     }
     
 }
 
 //MARK:- Extension
+//Extension에서 (delegate 'proxy'를 통해 Observable을 반환하는) 연산 프로퍼티를 참조 했을때에야 비로소 Delegate Proxy 인스턴스가 생성되고 delegate 관계가 맺어지는건가?
+extension Reactive where Base: NMFMapView {
+    
+    var touchDelegate: DelegateProxy<NMFMapView, NMFMapViewTouchDelegate> {
+        return RxNMFMapViewTouchDelegateProxy.proxy(for: self.base)
+    }
+    
+    var cameraDelegate: DelegateProxy<NMFMapView, NMFMapViewCameraDelegate> {
+        return RxNMFMapViewCameraDelegateProxy.proxy(for: self.base)
+    }
+    
+    var didTapMap: Observable<NMGLatLng> {
+        return touchDelegate.methodInvoked(#selector(NMFMapViewTouchDelegate.mapView(_:didTapMap:point:)))
+            .map { parameters in
+                return parameters[1] as? NMGLatLng ?? NMGLatLng(lat: <#T##Double#>, lng: <#T##Double#>)
+            }
+    }
+    
+    ///카메라 이동이 끝난 경우 호출 됨
+    var mapViewCameraIdle: Observable<NMFMapView?> {
+        return cameraDelegate.methodInvoked(#selector(NMFMapViewCameraDelegate.mapViewCameraIdle(_:)))
+            .map { parameters in
+                return parameters[0] as? NMFMapView
+            }
+    }
+    
+}
