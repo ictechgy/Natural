@@ -78,19 +78,24 @@ extension Reactive where Base: NMFMapView {
         return RxNMFMapViewCameraDelegateProxy.proxy(for: self.base)
     }
     
+    ///지도에서 오버레이가 아닌 부분 터치 시 호출
+    ///스트림에 실리는 값은 터치된 부분의 지도 상 위경도 좌표 값. 타입캐스팅에 실패할 경우 (0, 0)이 실립니다.
     var didTapMap: Observable<NMGLatLng> {
         return touchDelegate.methodInvoked(#selector(NMFMapViewTouchDelegate.mapView(_:didTapMap:point:)))
             .map { parameters in
-                return parameters[1] as? NMGLatLng ?? NMGLatLng(lat: <#T##Double#>, lng: <#T##Double#>)
+                return parameters[1] as? NMGLatLng ?? NMGLatLng(lat: 0, lng: 0)
             }
     }
     
     ///카메라 이동이 끝난 경우 호출 됨
+    ///스트림에 실리는 값은 카메라 이동이 끝난 해당 mapView. 타입캐스팅에 실패한 경우 nil
     var mapViewCameraIdle: Observable<NMFMapView?> {
         return cameraDelegate.methodInvoked(#selector(NMFMapViewCameraDelegate.mapViewCameraIdle(_:)))
             .map { parameters in
                 return parameters[0] as? NMFMapView
             }
     }
+    
+    //이곳의 Observable 연산 프로퍼티 스트림들은 끝나는 시점이 정해지지 않은 스트림들인 것으로 보인다. (onDisposed 시점이 정해지지 않음)
     
 }

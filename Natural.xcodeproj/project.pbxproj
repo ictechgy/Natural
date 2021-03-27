@@ -19,6 +19,7 @@
 		C48FB42D25E6C44400E3FF26 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */; };
 		C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */; };
 		C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44325E78F1500E3FF26 /* MarkerModel.swift */; };
+		C4B7A675260F7E4A0009B7EE /* CLLocationManager+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */; };
 		C4BE560A25E4134500A83CC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560925E4134500A83CC2 /* AppDelegate.swift */; };
 		C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */; };
 		C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560D25E4134500A83CC2 /* MapViewController.swift */; };
@@ -41,6 +42,7 @@
 		C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerInfo.swift; sourceTree = "<group>"; };
 		C48FB44325E78F1500E3FF26 /* MarkerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerModel.swift; sourceTree = "<group>"; };
+		C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationManager+Rx.swift"; sourceTree = "<group>"; };
 		C4BE560625E4134500A83CC2 /* Natural.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Natural.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4BE560925E4134500A83CC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				C40A7BD2260C8D0E001EDDD4 /* NMFMapView+Rx.swift */,
+				C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */,
 			);
 			path = Rx;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				C4BE560A25E4134500A83CC2 /* AppDelegate.swift in Sources */,
 				C4D026CA25F4DC9700D55196 /* BottomSheetView.swift in Sources */,
 				C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */,
+				C4B7A675260F7E4A0009B7EE /* CLLocationManager+Rx.swift in Sources */,
 				C40A7BD3260C8D0E001EDDD4 /* NMFMapView+Rx.swift in Sources */,
 				C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */,
 				C40D44AF25FFAF5A00770C6C /* AddViewModel.swift in Sources */,
