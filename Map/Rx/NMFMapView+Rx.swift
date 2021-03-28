@@ -88,11 +88,11 @@ extension Reactive where Base: NMFMapView {
     }
     
     ///카메라 이동이 끝난 경우 호출 됨
-    ///스트림에 실리는 값은 카메라 이동이 끝난 해당 mapView. 타입캐스팅에 실패한 경우 nil
-    var mapViewCameraIdle: Observable<NMFMapView?> {
+    ///스트림에 실리는 값은 없습니다.
+    var mapViewCameraIdle: Observable<Void> {
         return cameraDelegate.methodInvoked(#selector(NMFMapViewCameraDelegate.mapViewCameraIdle(_:)))
-            .map { parameters in
-                return parameters[0] as? NMFMapView
+            .map { _ in
+                return      //파라미터로는 NMFMapView가 있는데 굳이 스트림에 싣지 않아도 된다.
             }
     }
     
