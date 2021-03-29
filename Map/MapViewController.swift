@@ -12,6 +12,7 @@ import NMapsMap
 
 class MapViewController: UIViewController {
     
+    //MARK:- Variables
     var viewModel: MapViewModel = MapViewModel()
     var disposeBag = DisposeBag()
     var locationManager: CLLocationManager!
@@ -35,28 +36,32 @@ class MapViewController: UIViewController {
         return NMFOverlayImage(image: UIImage(systemName: "questionmark")!)
     }()
     
-    lazy var longTappedMarkerImage: NMFOverlayImage = {
-        return NMF_MARKER_IMAGE_BLUE
-    }()
-    
+    //NMFMapView 프로퍼티. 스토리보드에 있는 지도 뷰는 현재 NMFNaverMapView로 설정되어 있습니다.
     lazy var mapView: NMFMapView = {
         naverMapView.mapView
     }()
     
-    lazy var longTappedMarker: NMFMarker = {       //지도를 long press 한 경우 나타날 마커
+    //지도를 길게 탭했을 시 띄워질 마커 이미지
+    lazy var longTappedMarkerImage: NMFOverlayImage = {
+        return NMF_MARKER_IMAGE_BLUE
+    }()
+    
+    //지도를 long press 한 경우 나타날 마커 객체
+    lazy var longTappedMarker: NMFMarker = {
         let marker = NMFMarker()
         marker.iconImage = longTappedMarkerImage
         return marker
     }()
     
-    lazy var longTappedInfoWindow: NMFInfoWindow = {        //longTappedMarker와 같이 보일 infoWindow
+    //longTappedMarker와 같이 보일 infoWindow
+    lazy var longTappedInfoWindow: NMFInfoWindow = {
         let window = NMFInfoWindow()
         let dataSource = NMFInfoWindowDefaultTextSource.data()
         dataSource.title = "이 위치에 수거함 추가"
         window.dataSource = dataSource
         
         window.touchHandler = { [weak self] overlay in
-            //window 터치 시
+            //window 터치 시 AddVC로 이동
             guard let addVC: AddViewController = self?.storyboard?.instantiateViewController(identifier: "AddVC", creator: { coder in
                 return AddViewController(coder: coder)
             }), let marker: NMFMarker = window.marker else {
@@ -72,29 +77,21 @@ class MapViewController: UIViewController {
         return window
     }()
     
+    //MARK: Outlet variables
     @IBOutlet weak var naverMapView: NMFNaverMapView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var bottomSheetView: BottomSheetView!
     @IBOutlet weak var longPressRecognizer: UILongPressGestureRecognizer!
     
+    //MARK:- LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
         setUpMapView()  //맵뷰에 대한 기본 설정들
-        locationManager = CLLocationManager()
-        locationManager.delegate = self
-        
-        viewModel.centerCoord
-            .take(1)
-            .bind { coord in
-                self.mapView.latitude = coord.latitude
-                self.mapView.longitude = coord.longitude
-                //사용자의 마지막 위치가 띄워지도록 설정. 기존에는 moveCamera with CameraUpdate를 사용하였지만 굳이 그럴 필요가 없어서 변경
-            }.disposed(by: disposeBag) //1번만 실행되고 끝나므로 retain cycle은 고려하지 않음.
-        
-        mapView.addCameraDelegate(delegate: self)
-        mapView.touchDelegate = self
+        setUpLocationManagerAndDelegates()  //CLLocationManager 객체 생성 및 Delegate 설정
+        loadLastLocation()  //사용자의 마지막 위치 로드
+        setUpMapViewDelegates() //NMFMapView의 Delegate 설정
         
         //위치 변경에 따라 마커 목록을 업데이트 후 지도에 표시
         viewModel.markers  //on ConcurrentDispatchQueue
@@ -185,12 +182,89 @@ class MapViewController: UIViewController {
         longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:)))
     }
     
+    //MARK:- Custom Methods
     func setUpMapView() {
         mapView.minZoomLevel = 12
         naverMapView.showCompass = true
         naverMapView.showScaleBar = true
         naverMapView.showZoomControls = false
         naverMapView.showIndoorLevelPicker = false
+    }
+    
+    func setUpLocationManagerAndDelegates() {
+        
+        locationManager = CLLocationManager()
+        
+        //위치 권한 변경에 대한 subscribe
+        locationManager.rx.locationManagerDidChangeAuthorization
+            .subscribe(onNext: { [weak self] in
+                
+                self?.naverMapView.showLocationButton = false  //내 위치 버튼 기본 값 보이지 않음으로 설정
+                let alertCkKey = "AlertCkKey"
+                let isWarned = UserDefaults.standard.bool(forKey: alertCkKey)       //권한 거부에 대한 경고 메시지를 기존에 띄웠는지 확인할 것입니다.
+                
+                switch self?.locationManager.authorizationStatus {
+                case .notDetermined:    //아직 정해지지 않았다면 권한 요청창을 띄운다.
+                    self?.locationManager.requestWhenInUseAuthorization()
+                    UserDefaults.standard.setValue(false, forKey: alertCkKey)
+                case .denied, .restricted:  //거부되었거나 제한된 상태라면 알림창을 띄운다. (최초 1회)
+                    
+                    if !isWarned{
+                        let alertController = UIAlertController(title: "권한 거부됨", message: "위치 서비스를 사용할 수 없습니다. 기기의 '설정 - 개인정보 보호'에서 위치 서비스를 허용하여 주십시오.", preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+                        alertController.addAction(okAction)
+                        self?.present(alertController, animated: true, completion: nil)
+                        
+                        UserDefaults.standard.setValue(true, forKey: alertCkKey)  //alert 띄웠음을 저장
+                    }
+                case .authorizedAlways, .authorizedWhenInUse:
+                    self?.naverMapView.showLocationButton = true
+                    UserDefaults.standard.setValue(false, forKey: alertCkKey)
+                case .none: //권한은 변경되었는데 self가 없다?? -> 경고 값 설정만 초기화
+                    UserDefaults.standard.setValue(false, forKey: alertCkKey)
+                @unknown default:
+                    UserDefaults.standard.setValue(false, forKey: alertCkKey)
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        //권한이 이미 한번 설정되었어도 설정에 가서 변경하고 올 수 있다는 점 때문에 조금 복잡하게 작성되었다.
+        //이를 테면 '허가를 했다가 설정에서 거부'를 하는 경우 location버튼은 보이면 안되고..
+        //'거부를 하고 alert 본 뒤 설정에서 다른 설정을 했다가 다시 거부'를 하는 경우 다시 최초 한번 alert를 띄워야 한다던지..하는 점들 때문에.
+        
+        //사용자의 위치를 얻어오는데에 실패한 경우
+        locationManager.rx.didFailWithError
+            .subscribe(onNext: { [weak self] error in
+                let alertController = UIAlertController(title: "오류 발생", message: "사용자의 위치를 불러오던 도중 문제가 발생하였습니다. 다음에 다시 시도하십시오.", preferredStyle: .alert)
+                let ok = UIAlertAction(title: "확인", style: .default, handler: nil)
+                alertController.addAction(ok)
+                
+                self?.present(alertController, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func loadLastLocation() {
+        _ = viewModel.centerCoord
+            .take(1)
+            .bind { coord in
+                self.mapView.latitude = coord.latitude
+                self.mapView.longitude = coord.longitude
+                //사용자의 마지막 위치가 띄워지도록 설정. 기존에는 moveCamera with CameraUpdate를 사용하였지만 굳이 그럴 필요가 없어서 변경
+            }
+        //1번만 실행되고 끝나므로 retain cycle은 고려하지 않아도 됨.
+    }
+    
+    func setUpMapViewDelegates() {
+        
+        
+        
+        mapView.rx.mapViewCameraIdle
+            .subscribe(onNext: { [weak self] in
+                
+            })
+        
     }
     
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
