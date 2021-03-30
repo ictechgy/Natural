@@ -89,23 +89,25 @@ class MapViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         setUpMapView()  //맵뷰에 대한 기본 설정들
-        setUpLocationManagerAndDelegates()  //CLLocationManager 객체 생성 및 Delegate 설정
         loadLastLocation()  //사용자의 마지막 위치 로드
-        setUpMapViewDelegates() //NMFMapView의 Delegate 설정
         
-        //위치 변경에 따라 마커 목록을 업데이트 후 지도에 표시
+        bindLocationManagerDelegates()  //CLLocationManager 객체 생성 및 Delegate 설정
+        bindMapViewDelegates() //NMFMapView의 Delegate 설정
+        
+        //지도 위치 변경에 따라 마커 목록 업데이트 후 지도에 표시
         viewModel.markers  //on ConcurrentDispatchQueue
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] _ in
-                //지도에 추가된 마커 속성은 메인쓰레드에서 다뤄야 함.
+                //지도에 이미 추가되어있는 마커 속성은 메인쓰레드에서 다뤄야 함.
                 //지도에 추가되어있는 마커 삭제
                 self?.markers.forEach { existingMarker in
-                    existingMarker.mapView = nil    //마커를 지도에서 삭제합니다.
+                    existingMarker.mapView = nil    //기존 마커를 지도에서 삭제합니다.
                 }
                 self?.markers.removeAll()   //리스트 비우기
             })
-            .observe(on: ConcurrentDispatchQueueScheduler.init(qos: .default))
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
             .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
+                //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 
                 //마커 기본 이미지
                 let defaultOverlayImage = NMFOverlayImage()
@@ -120,7 +122,6 @@ class MapViewController: UIViewController {
                     return true //이벤트 소비. 지도로 전파하지 않습니다.
                 }
                 
-                //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
                 markerList.enumerated().forEach { [weak self] index, markerInfo in
                     
                     var image: NMFOverlayImage?
@@ -182,6 +183,10 @@ class MapViewController: UIViewController {
         longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:)))
     }
     
+    deinit {
+        disposeBag = DisposeBag()
+    }
+    
     //MARK:- Custom Methods
     func setUpMapView() {
         mapView.minZoomLevel = 12
@@ -191,7 +196,18 @@ class MapViewController: UIViewController {
         naverMapView.showIndoorLevelPicker = false
     }
     
-    func setUpLocationManagerAndDelegates() {
+    func loadLastLocation() {
+        _ = viewModel.centerCoord
+            .take(1)
+            .bind { coord in
+                self.mapView.latitude = coord.latitude
+                self.mapView.longitude = coord.longitude
+                //사용자의 마지막 위치가 띄워지도록 설정. 기존에는 moveCamera with CameraUpdate를 사용하였지만 굳이 그럴 필요가 없어서 변경
+            }
+        //1번만 실행되고 끝나므로 retain cycle은 고려하지 않아도 됨.
+    }
+    
+    func bindLocationManagerDelegates() {
         
         locationManager = CLLocationManager()
         
@@ -243,29 +259,49 @@ class MapViewController: UIViewController {
                 self?.present(alertController, animated: true, completion: nil)
             })
             .disposed(by: disposeBag)
+        
     }
     
-    func loadLastLocation() {
-        _ = viewModel.centerCoord
-            .take(1)
-            .bind { coord in
-                self.mapView.latitude = coord.latitude
-                self.mapView.longitude = coord.longitude
-                //사용자의 마지막 위치가 띄워지도록 설정. 기존에는 moveCamera with CameraUpdate를 사용하였지만 굳이 그럴 필요가 없어서 변경
-            }
-        //1번만 실행되고 끝나므로 retain cycle은 고려하지 않아도 됨.
-    }
-    
-    func setUpMapViewDelegates() {
+    func bindMapViewDelegates() {
         
-        
-        
+        //mapView 최초 로드 시, 카메라가 이동이 완료된 경우
         mapView.rx.mapViewCameraIdle
             .subscribe(onNext: { [weak self] in
                 
+                guard let strongSelf = self else {
+                    return
+                }   //카메라가 이동한 경우 해당 변동 사항을 viewModel에 반영할 때까지는 self를 붙잡고 있기.
+                
+                strongSelf.loadingIndicator.startAnimating()
+                
+                let bounds: NMGLatLngBounds = strongSelf.mapView.contentBounds
+                strongSelf.viewModel.northEastCoord.accept(CLLocationCoordinate2D(latitude: bounds.northEastLat, longitude: bounds.northEastLng))
+                
+                let lat = strongSelf.mapView.cameraPosition.target.lat
+                let lng = strongSelf.mapView.cameraPosition.target.lng
+                strongSelf.viewModel.centerCoord.accept(CLLocationCoordinate2D(latitude: lat, longitude: lng))
+                
+                //카메라 이동이 완료된 경우 BottomSheetView를 숨깁니다.
+                strongSelf.hideViewsAfterUserInteraction()
             })
+            .disposed(by: disposeBag)
+        
+        //오버레이가 아닌 지도부분을 터치한 경우 (BottomSheetView를 숨깁니다.)
+        mapView.rx.didTapMap
+            .subscribe(onNext: { [weak self] touchedCoord in
+                self?.hideViewsAfterUserInteraction()
+            })
+            .disposed(by: disposeBag)
         
     }
+    
+    func hideViewsAfterUserInteraction() {
+        bottomSheetView.isHidden = true
+        longTappedMarker.mapView = nil
+        longTappedInfoWindow.close()
+    }
+    
+    
     
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
         //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
@@ -292,20 +328,19 @@ class MapViewController: UIViewController {
         longTappedInfoWindow.open(with: longTappedMarker)
     }
     
-    deinit {
-        disposeBag = DisposeBag()
-    }
 }
 
+//MARK:- Extensions (deprecated)
+/*
 extension MapViewController: NMFMapViewCameraDelegate, NMFMapViewTouchDelegate {
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {     //카메라 움직임이 끝난 뒤 - VC가 보여질 때 최초 한번은 작동합니다.(앱을 처음 실행하든 아니든), 중심좌표 변동에 대해서만 작동한다. 회전, 확대, 축소에 대해서는 작동하지 않음. 하지만 보통은 지도 확대/축소 시 미세하게나마 중심좌표가 변동된다.
-        //직접적인 rx바인딩이 되지 않아서 수동설정(?) - mapView의 latitude, longitude를 zoomLevel과 함께 직접적으로 이용하거나 특정 NMGLatLngBounds를 이용해볼 수도 있을까?
+        //직접적인 rx바인딩(mapView의 프로퍼티들을 외부 Observable로 바인딩 할 수 없음)이 되지 않아서 수동설정(?) - mapView의 latitude, longitude를 zoomLevel과 함께 직접적으로 이용하거나 특정 NMGLatLngBounds를 이용해볼 수도 있을까?
         
-        //보면은 viewDidLoad에서 lat,lng 세팅(동기식) 이후에 delegate를 설정했는데도 이 메소드는 최초에 무조건 한번 작동 한다.
+        //보면은 viewDidLoad에서 마지막 위치 값 lat,lng 세팅(동기식) 이후에 delegate를 설정했는데도 이 메소드는 최초에 무조건 한번 작동 한다.
         //VC가 최초 로드될 때 이 메소드가 무조건 한번 실행되는 방식이 아니었다면 구현 방식이 더 복잡해졌을 것이다. (반드시 이동이 발생한 경우에만 작동하는 것이었다면)
         //왜냐하면 최초 지도화면에 마커를 띄워줘야 하는 문제때문에.
-        //(만약 최초 로드 시 작동 안했다면)가장 처음 화면에 띄워줄 마커를 가져오기 위해 VC 최초 생성시에만 작동하도록 flag를 두고 viewWillAppear(또는 그 이후 LifeCycle메소드)에 take(1)로 중심 좌표와 반경을 구해 viewModel에 넘기는 코드가 별도로 필요했을 것. (mapView projection을 통해 화면 bounds와 CGPoint 조합하여 좌표를 구하는 방식이 필요했을 수도 있는데 그러면 뷰가 언제 완전히 그려지는지도 고려했어야 했을 것... 전체적인 순서가 굉장히 복잡해진다. )
+        //(만약 최초 로드 시 이 메소드가 작동 안했다면)가장 처음 화면에 띄워줄 마커를 가져오기 위해 VC 최초 생성시에만 작동하도록 viewDidLoad를 이용하거나, flag를 두고 viewWillAppear(또는 그 이후 LifeCycle메소드)에 take(1)로 중심 좌표와 반경을 구해 viewModel에 넘기는 코드가 별도로 필요했을 것. (아니면 이 delegate 메소드를 강제로 호출하거나..) (mapView projection을 통해 화면 bounds와 CGPoint 조합하여 좌표를 구하는 방식이 필요했을 수도 있는데 그러면 뷰가 언제 완전히 그려지는지도 고려했어야 했을 것... 전체적인 순서가 굉장히 복잡해진다. )
         //Android SDK에는 onMapReady()라는 메소드가 존재하기는 했음.
         loadingIndicator.startAnimating()
         
@@ -376,3 +411,4 @@ extension MapViewController: CLLocationManagerDelegate {
     }
     
 }
+ */
