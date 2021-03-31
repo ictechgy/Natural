@@ -95,31 +95,9 @@ class MapViewController: UIViewController {
         bindMapViewDelegates() //NMFMapView의 Delegate 설정
         
         bindMarkers()   //지도 위치 변경에 따라 마커 목록 업데이트 후 지도에 표시
+        bindBottomSheetView()   //BottomSheetView에 대한 바인딩
         
-        //BottomSheetView에 대한 바인딩
-        viewModel.markerImage
-            .asDriver()
-            .drive(onNext: { [weak self] (image: UIImage?) in
-                self?.bottomSheetView.imageView.image = image
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.selectedMarker
-            .asDriver()
-            .drive(onNext: { [weak self] markerInfo in
-                
-                self?.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
-                self?.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
-                self?.bottomSheetView.detailAddress.text = markerInfo.detailAddress
-                self?.bottomSheetView.isHidden = false
-                
-            })
-            .disposed(by: disposeBag)
-        
-        bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되나 여기서 바로 다시 숨김 세팅(filter operator를 사용해도 되긴 함)
-        bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:)))
-        
-        longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:)))
+        bindLongPressRecognizer()
     }
     
     deinit {
@@ -310,6 +288,79 @@ class MapViewController: UIViewController {
         
     }
     
+    func bindBottomSheetView() {
+        
+        viewModel.markerImage   //BehaviorRelay 초기 값: nil
+            .asDriver()
+            .drive(onNext: { [weak self] (image: UIImage?) in
+                self?.bottomSheetView.imageView.image = image
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.selectedMarker    //BehaviorRelay 초기 값: dummy 객체
+            .asDriver()
+            .drive(onNext: { [weak self] markerInfo in
+                
+                self?.bottomSheetView.typeLabel.text = markerInfo.type.rawValue
+                self?.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
+                self?.bottomSheetView.detailAddress.text = markerInfo.detailAddress
+                
+                self?.bottomSheetView.isHidden = false
+                
+            })
+            .disposed(by: disposeBag)
+        
+        bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되지만 여기서 바로 다시 숨김 세팅(filter operator를 사용해도 되긴 함)
+        
+        //bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:))) -> Rx로 대체합니다.
+        bottomSheetView.tapGestureRecognizer.rx.event
+            .subscribe(onNext: { [weak self] (gestureRecognizer: UITapGestureRecognizer) in
+                //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
+                
+                guard let self = self else {
+                    return      //끝날 때까지 self를 잠시 묶어두기
+                }
+                
+                let detailVC = (self.storyboard ?? UIStoryboard.init(name: "Main", bundle: Bundle.main)).instantiateViewController(identifier: "DetailVC") { coder in
+                    return DetailViewController(coder: coder)
+                }
+                
+                detailVC.viewModel = self.viewModel
+                self.navigationController?.pushViewController(detailVC, animated: true)
+                
+            })
+            .disposed(by: disposeBag)
+        
+    }
+    
+    func bindLongPressRecognizer() {
+        //longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:))) -> Rx로 대체
+        
+        longPressRecognizer.rx.event
+            .subscribe(onNext: { [weak self] gestureRecognizer in
+                //지도를 꾹 누른 경우 호출
+                
+                guard let self = self else {
+                    return      //self 잠시 붙잡기
+                }
+                
+                self.longTappedMarker.mapView = nil
+                self.longTappedInfoWindow.close()
+                
+                let touchedPoint: CGPoint = gestureRecognizer.location(in: gestureRecognizer.view)
+                let coord: NMGLatLng = self.mapView.projection.latlng(from: touchedPoint)
+                
+                self.longTappedMarker.position = coord
+                self.longTappedMarker.mapView = self.mapView
+                self.longTappedInfoWindow.open(with: self.longTappedMarker)
+                
+            })
+            .disposed(by: disposeBag)
+        
+    }
+    
+    //MARK: Deprecated Custom Methods
+    /*
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
         //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
         
@@ -321,6 +372,7 @@ class MapViewController: UIViewController {
         self.navigationController?.pushViewController(detailVC, animated: true)
         
     }
+     
     
     @objc func didTapMapLong(sender: UILongPressGestureRecognizer) {
         //지도를 꾹 누른 경우 호출
@@ -334,7 +386,8 @@ class MapViewController: UIViewController {
         longTappedMarker.mapView = self.mapView
         longTappedInfoWindow.open(with: longTappedMarker)
     }
-    
+    */
+ 
 }
 
 //MARK:- Extensions (deprecated)
