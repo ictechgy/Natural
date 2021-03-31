@@ -94,69 +94,7 @@ class MapViewController: UIViewController {
         bindLocationManagerDelegates()  //CLLocationManager 객체 생성 및 Delegate 설정
         bindMapViewDelegates() //NMFMapView의 Delegate 설정
         
-        //지도 위치 변경에 따라 마커 목록 업데이트 후 지도에 표시
-        viewModel.markers  //on ConcurrentDispatchQueue
-            .observe(on: MainScheduler.instance)
-            .do(onNext: { [weak self] _ in
-                //지도에 이미 추가되어있는 마커 속성은 메인쓰레드에서 다뤄야 함.
-                //지도에 추가되어있는 마커 삭제
-                self?.markers.forEach { existingMarker in
-                    existingMarker.mapView = nil    //기존 마커를 지도에서 삭제합니다.
-                }
-                self?.markers.removeAll()   //리스트 비우기
-            })
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
-            .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
-                //새로 받아온 마커 리스트를 NMFMarker객체로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
-                
-                //마커 기본 이미지
-                let defaultOverlayImage = NMFOverlayImage()
-                
-                //마커가 눌렸을 때 동작할 핸들러
-                let markerTouchHandler: NMFOverlayTouchHandler = { [weak self] overlay in
-                    guard let index = overlay.userInfo["index"] as? Int else {
-                        return false
-                    }
-                    
-                    self?.viewModel.markerSelected(index: index)
-                    return true //이벤트 소비. 지도로 전파하지 않습니다.
-                }
-                
-                markerList.enumerated().forEach { [weak self] index, markerInfo in
-                    
-                    var image: NMFOverlayImage?
-                    switch markerInfo.type {
-                    case .clothes:
-                        image = self?.clothesImage
-                    case .battery:
-                        image = self?.batteryImage
-                    case .fluorescentLamp:
-                        image = self?.lampImage
-                    case .medicines:
-                        image = self?.medicinesImage
-                    case .unknown:
-                        image = self?.unknownImage
-                    }
-                    
-                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image ?? defaultOverlayImage)
-                    
-                    //마커 선택 시 작동할 로직
-                    newMarker.userInfo = ["index" : index]  //각 마커를 구분하는 값 설정
-                    newMarker.touchHandler = markerTouchHandler
-                    
-                    self?.markers.append(newMarker)
-                }
-            })
-            .asSignal(onErrorJustReturn: [])    //main thread
-            .emit(onNext: { [weak self] _ in
-                
-                self?.markers.forEach({ [weak self] marker in
-                    marker.mapView = self?.mapView          //지도에 나타내기
-                })
-                
-                self?.loadingIndicator.stopAnimating()
-                
-            }).disposed(by: disposeBag)
+        bindMarkers()   //지도 위치 변경에 따라 마커 목록 업데이트 후 지도에 표시
         
         //BottomSheetView에 대한 바인딩
         viewModel.markerImage
@@ -174,10 +112,11 @@ class MapViewController: UIViewController {
                 self?.bottomSheetView.roadNameAddress.text = markerInfo.roadNameAddress
                 self?.bottomSheetView.detailAddress.text = markerInfo.detailAddress
                 self?.bottomSheetView.isHidden = false
+                
             })
             .disposed(by: disposeBag)
         
-        bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되나 여기서 바로 다시 숨김 세팅
+        bottomSheetView.isHidden = true //초기 상태 숨김 - 위의 selectedMarker BehaviorRelay 바인딩에 의해 bottomSheetView에 의미 없는 값이 있는 상태로 hidden이 풀리게 되나 여기서 바로 다시 숨김 세팅(filter operator를 사용해도 되긴 함)
         bottomSheetView.tapGestureRecognizer.addTarget(self, action: #selector(bottomSheetTapped(sender:)))
         
         longPressRecognizer.addTarget(self, action: #selector(didTapMapLong(sender:)))
@@ -301,7 +240,75 @@ class MapViewController: UIViewController {
         longTappedInfoWindow.close()
     }
     
-    
+    func bindMarkers() {
+        
+        viewModel.markers  //on ConcurrentDispatchQueue
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] _ in
+                //지도에 이미 추가되어있는 마커 속성은 메인쓰레드에서 다뤄야 함.
+                //지도에 추가되어있는 마커 삭제
+                self?.markers.forEach { existingMarker in
+                    existingMarker.mapView = nil    //기존 마커를 지도에서 삭제합니다.
+                }
+                self?.markers.removeAll()   //리스트 비우기
+            })
+            //.filter { !$0.isEmpty } //markerList 배열이 비어있다면 여기까지만. -> ActivityIndicator때문에 일단은.. 안됨.
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .default))
+            .do(onNext: { [weak self] markerList in     //이것도 ViewModel에서 해줘야 하는 걸까? 여기서는 mapView 지정/해제만 해주고?
+                //새로 받아온 마커 리스트를 NMFMarker객체(리스트)로 바꿉니다.(별도의 쓰레드에서 수행합니다.)
+                
+                //마커 기본 이미지
+                let defaultOverlayImage = NMFOverlayImage()
+                
+                //마커가 눌렸을 때 동작할 핸들러
+                //retain cycle 주의. markers 안의 각각의 마커들이 공통적으로 참조하게 될 클로저
+                let markerTouchHandler: NMFOverlayTouchHandler = { [weak self] overlay in
+                    guard let index = overlay.userInfo["index"] as? Int else {
+                        return false    //이벤트를 소비하지 않고 지도로 전파
+                    }
+                    
+                    self?.viewModel.markerSelected(index: index)
+                    return true //이벤트 소비. 지도로 전파하지 않습니다.
+                }
+                
+                markerList.enumerated().forEach { [weak self] index, markerInfo in
+                    
+                    var image: NMFOverlayImage?
+                    switch markerInfo.type {
+                    case .clothes:
+                        image = self?.clothesImage
+                    case .battery:
+                        image = self?.batteryImage
+                    case .fluorescentLamp:
+                        image = self?.lampImage
+                    case .medicines:
+                        image = self?.medicinesImage
+                    case .unknown:
+                        image = self?.unknownImage
+                    }
+                    
+                    let newMarker = NMFMarker(position: NMGLatLng(lat: markerInfo.latitude, lng: markerInfo.longitude), iconImage: image ?? defaultOverlayImage)
+                    
+                    //마커 선택 시 작동할 로직
+                    newMarker.userInfo = ["index" : index]  //각 마커를 구분하는 값 설정
+                    newMarker.touchHandler = markerTouchHandler
+                    
+                    self?.markers.append(newMarker)
+                }
+            })
+            .asSignal(onErrorJustReturn: [])    //main thread
+            .emit(onNext: { [weak self] _ in
+                
+                self?.markers.forEach { [weak self] marker in   //markers의 forEach를 실행시키는데 (일단 for each 실행에 들어간 것으로 가정) markers가 정말 많은 경우 이 for each에 weak self 안되어 있으면 앱을 종료해도 반복이 다 끝날 때까지 retain cycle이 유지될 것으로 보여 weak self 설정함.
+                    marker.mapView = self?.mapView          //지도에 나타내기
+                }
+                
+                self?.loadingIndicator.stopAnimating()
+                
+            })
+            .disposed(by: disposeBag)
+        
+    }
     
     @objc func bottomSheetTapped(sender: UITapGestureRecognizer){
         //마커 정보가 표시되어있는 BottomSheetView를 터치한 경우 상세화면으로 넘어갈 것임
