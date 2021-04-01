@@ -19,22 +19,40 @@ class MapViewController: UIViewController {
 
     var markers: [NMFMarker] = []      //지도에 표시되어 있는 마커 저장용
     
-    //이미지에 대한 프로퍼티들
+    //이미지 프로퍼티(마커 기본)
     lazy var clothesImage: NMFOverlayImage = {
-        return NMFOverlayImage(image: UIImage(systemName: "person.fill")!)
+        return NMFOverlayImage(image: UIImage(named: "clothes.png")!)
     }()
     lazy var batteryImage: NMFOverlayImage = {
-        return NMFOverlayImage(image: UIImage(systemName: "minus.plus.batteryblock.fill")!)
+        return NMFOverlayImage(image: UIImage(named: "battery.png")!)
     }()
     lazy var lampImage: NMFOverlayImage = {
-        return NMFOverlayImage(image: UIImage(systemName: "lightbulb.fill")!)
+        return NMFOverlayImage(image: UIImage(named: "lamp.png")!)
     }()
     lazy var medicinesImage: NMFOverlayImage = {
-        return NMFOverlayImage(image: UIImage(systemName: "pills.fill")!)
+        return NMFOverlayImage(image: UIImage(named: "medicines.png")!)
     }()
     lazy var unknownImage: NMFOverlayImage = {
-        return NMFOverlayImage(image: UIImage(systemName: "questionmark")!)
+        return NMFOverlayImage(image: UIImage(named: "unknown.png")!)
     }()
+    
+    //이미지 프로퍼티(마커가 선택된 경우)
+    lazy var selectedClothesImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(named: "selectedClothes.png")!)
+    }()
+    lazy var selectedBatteryImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(named: "selectedBattery.png")!)
+    }()
+    lazy var selectedLampImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(named: "selectedLamp.png")!)
+    }()
+    lazy var selectedMedicinesImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(named: "selectedMedicines.png")!)
+    }()
+    lazy var selectedUnknownImage: NMFOverlayImage = {
+        return NMFOverlayImage(image: UIImage(named: "selectedUnknown.png")!)
+    }()
+    
     
     //NMFMapView 프로퍼티. 스토리보드에 있는 지도 뷰는 현재 NMFNaverMapView로 설정되어 있습니다.
     lazy var mapView: NMFMapView = {
