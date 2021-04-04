@@ -10,11 +10,17 @@
    
 &nbsp;   
    
-## 📚 사용한 라이브러리 (Used libraries)  
+## 📚 사용한 라이브러리 (Used libraries)     
+1. RxSwift
+2. RxCocoa
+3. Naver NMapsMap(네이버 맵)
+4. Google Firebase 및 Firestore
+5. GeoFire 
    
 &nbsp;   
    
 ## 🚀 사용했거나 사용하려 했던 패턴/스킬 (Used Or Tried Patterns And Skills)
+1. RxSwift with MVVM
    
 &nbsp;   
    
