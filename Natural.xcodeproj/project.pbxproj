@@ -20,6 +20,7 @@
 		C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */; };
 		C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44325E78F1500E3FF26 /* MarkerModel.swift */; };
 		C4B7A675260F7E4A0009B7EE /* CLLocationManager+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */; };
+		C4B7A679261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */; };
 		C4BE560A25E4134500A83CC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560925E4134500A83CC2 /* AppDelegate.swift */; };
 		C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */; };
 		C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560D25E4134500A83CC2 /* MapViewController.swift */; };
@@ -43,6 +44,7 @@
 		C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerInfo.swift; sourceTree = "<group>"; };
 		C48FB44325E78F1500E3FF26 /* MarkerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerModel.swift; sourceTree = "<group>"; };
 		C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationManager+Rx.swift"; sourceTree = "<group>"; };
+		C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImagePickerController+UINavigationController+Rx.swift"; sourceTree = "<group>"; };
 		C4BE560625E4134500A83CC2 /* Natural.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Natural.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4BE560925E4134500A83CC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		C40D44AD25FFAF3B00770C6C /* Add */ = {
 			isa = PBXGroup;
 			children = (
+				C4B7A677261B56FD0009B7EE /* Rx */,
 				C40D44AA25FFAAAC00770C6C /* AddViewController.swift */,
 				C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */,
 				C40A7BCB260254E8001EDDD4 /* AddModel.swift */,
@@ -124,6 +127,14 @@
 				C40D44AD25FFAF3B00770C6C /* Add */,
 			);
 			path = Map;
+			sourceTree = "<group>";
+		};
+		C4B7A677261B56FD0009B7EE /* Rx */ = {
+			isa = PBXGroup;
+			children = (
+				C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */,
+			);
+			path = Rx;
 			sourceTree = "<group>";
 		};
 		C4BE55FD25E4134500A83CC2 = {
@@ -281,6 +292,7 @@
 				C40A7BCC260254E8001EDDD4 /* AddModel.swift in Sources */,
 				C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */,
 				C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */,
+				C4B7A679261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift in Sources */,
 				C40D44AB25FFAAAC00770C6C /* AddViewController.swift in Sources */,
 				C40A7BCF2603DED0001EDDD4 /* AddStruct.swift in Sources */,
 				C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */,

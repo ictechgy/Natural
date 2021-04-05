@@ -140,6 +140,8 @@ class MapViewController: UIViewController {
                 //사용자의 마지막 위치가 띄워지도록 설정. 기존에는 moveCamera with CameraUpdate를 사용하였지만 굳이 그럴 필요가 없어서 변경
             }
         //1번만 실행되고 끝나므로 retain cycle은 고려하지 않아도 됨.
+        
+        //(앱 실행 시)네이버 지도의 경우 위치 권한이 있으면 현재 위치를, 위치 권한이 없는 경우 이전에 보고 있던 마지막 좌표지점을 보여주는 것으로 판단 됨.
     }
     
     func bindLocationManagerDelegates() {
