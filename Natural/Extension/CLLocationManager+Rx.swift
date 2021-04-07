@@ -29,25 +29,8 @@ import CoreLocation
  다만 NMFLocationManager으로는 NMFLocationManagerDelegate를 직접적으로 접근할 수가 없다. (add, remove 메소드만 존재)
  이에 대해 NMFMapView cameraDelegate에서 했던 것처럼 Delegate를 static 프로퍼티로 별도 접근하는 방법을 고려해볼 수도 있을 것이다.
  2. CLLocationManagerDelegateProxy를 만든다면, MapView를 가지고 있는 VC에서 CLLocationManager 객체를 만들고 이를 스트림형식으로 이용할 텐데, NMFLocationManager에 의한 CLLocationManager 하나, VC에 의한 CLLocationManager 하나, 인스턴스가 총 2개가 만들어질 수 있다.
-    (기기로부터 위치 데이터를 받는 등의 이벤트를 받는 것들은 두 인스턴스가 동일?)
+    (기기로부터 이벤트를 받는 것은 두 인스턴스가 동일? ex. 위치 데이터, 권한 변경 등)
  */
-
-class RxCLLocationManagerDelegateProxy: DelegateProxy<CLLocationManager, CLLocationManagerDelegate>, DelegateProxyType, CLLocationManagerDelegate {
-    static func registerKnownImplementations() {
-        self.register { locationManager -> RxCLLocationManagerDelegateProxy in
-            RxCLLocationManagerDelegateProxy(parentObject: locationManager, delegateProxy: self)
-        }
-    }
-    
-    static func currentDelegate(for object: CLLocationManager) -> CLLocationManagerDelegate? {
-        object.delegate
-    }
-    
-    static func setCurrentDelegate(_ delegate: CLLocationManagerDelegate?, to object: CLLocationManager) {
-        object.delegate = delegate
-    }
-    
-}
 
 extension Reactive where Base: CLLocationManager {
     

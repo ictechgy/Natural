@@ -23,4 +23,4 @@ import RxCocoa
  https://github.com/ReactiveX/RxSwift/blob/main/RxExample/RxExample/iOS/AppDelegate.swift
  */
 
-class RxUIImagePickerControllerDelegateProxy: 
+class RxUIImagePickerControllerDelegateProxy:
