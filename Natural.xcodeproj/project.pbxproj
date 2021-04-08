@@ -20,10 +20,11 @@
 		C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */; };
 		C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB44325E78F1500E3FF26 /* MarkerModel.swift */; };
 		C4B7A675260F7E4A0009B7EE /* CLLocationManager+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */; };
-		C4B7A679261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */; };
+		C4B7A679261B57A10009B7EE /* UIImagePickerController+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A678261B57A10009B7EE /* UIImagePickerController+Rx.swift */; };
 		C4B7A67E261CA3E80009B7EE /* RxNMFMapViewTouchDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A67D261CA3E80009B7EE /* RxNMFMapViewTouchDelegateProxy.swift */; };
 		C4B7A681261CA46A0009B7EE /* RxNMFMapViewCameraDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A680261CA46A0009B7EE /* RxNMFMapViewCameraDelegateProxy.swift */; };
 		C4B7A685261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A684261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift */; };
+		C4B7A6AC261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B7A6AB261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift */; };
 		C4BE560A25E4134500A83CC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560925E4134500A83CC2 /* AppDelegate.swift */; };
 		C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */; };
 		C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4BE560D25E4134500A83CC2 /* MapViewController.swift */; };
@@ -47,10 +48,11 @@
 		C48FB44025E78EFE00E3FF26 /* MarkerInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerInfo.swift; sourceTree = "<group>"; };
 		C48FB44325E78F1500E3FF26 /* MarkerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerModel.swift; sourceTree = "<group>"; };
 		C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationManager+Rx.swift"; sourceTree = "<group>"; };
-		C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImagePickerController+UINavigationController+Rx.swift"; sourceTree = "<group>"; };
+		C4B7A678261B57A10009B7EE /* UIImagePickerController+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImagePickerController+Rx.swift"; sourceTree = "<group>"; };
 		C4B7A67D261CA3E80009B7EE /* RxNMFMapViewTouchDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxNMFMapViewTouchDelegateProxy.swift; sourceTree = "<group>"; };
 		C4B7A680261CA46A0009B7EE /* RxNMFMapViewCameraDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxNMFMapViewCameraDelegateProxy.swift; sourceTree = "<group>"; };
 		C4B7A684261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxCLLocationManagerDelegateProxy.swift; sourceTree = "<group>"; };
+		C4B7A6AB261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxUIImagePickerControllerDelegateProxy.swift; sourceTree = "<group>"; };
 		C4BE560625E4134500A83CC2 /* Natural.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Natural.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4BE560925E4134500A83CC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C4BE560B25E4134500A83CC2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -92,7 +94,8 @@
 				C40A7BD2260C8D0E001EDDD4 /* NMFMapView+Rx.swift */,
 				C4B7A684261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift */,
 				C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */,
-				C4B7A678261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift */,
+				C4B7A6AB261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift */,
+				C4B7A678261B57A10009B7EE /* UIImagePickerController+Rx.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -294,7 +297,7 @@
 				C48FB44125E78EFE00E3FF26 /* MarkerInfo.swift in Sources */,
 				C48FB44425E78F1500E3FF26 /* MarkerModel.swift in Sources */,
 				C4B7A67E261CA3E80009B7EE /* RxNMFMapViewTouchDelegateProxy.swift in Sources */,
-				C4B7A679261B57A10009B7EE /* UIImagePickerController+UINavigationController+Rx.swift in Sources */,
+				C4B7A679261B57A10009B7EE /* UIImagePickerController+Rx.swift in Sources */,
 				C40D44AB25FFAAAC00770C6C /* AddViewController.swift in Sources */,
 				C40A7BCF2603DED0001EDDD4 /* AddStruct.swift in Sources */,
 				C4BE560E25E4134500A83CC2 /* MapViewController.swift in Sources */,
@@ -306,6 +309,7 @@
 				C4B7A685261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift in Sources */,
 				C40A7BD3260C8D0E001EDDD4 /* NMFMapView+Rx.swift in Sources */,
 				C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */,
+				C4B7A6AC261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift in Sources */,
 				C40D44AF25FFAF5A00770C6C /* AddViewModel.swift in Sources */,
 				C40D44A725FD15C600770C6C /* DetailViewController.swift in Sources */,
 			);
