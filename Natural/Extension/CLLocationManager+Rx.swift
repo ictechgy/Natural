@@ -66,6 +66,7 @@ extension Reactive where Base: CLLocationManager {
         public var didUpdateLocations: Observable<[CLLocation]> {
             RxCLLocationManagerDelegateProxy.proxy(for: base).didUpdateLocationsSubject.asObservable()
         }
+        //self.delegate.didUpdateLocationsSubject.asObservable()은 안되네
 
         /**
         Reactive wrapper for `delegate` message.
@@ -80,15 +81,15 @@ extension Reactive where Base: CLLocationManager {
         */
         public var didFinishDeferredUpdatesWithError: Observable<Error?> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didFinishDeferredUpdatesWithError:)))
-                .map { a in
-                    return try castOptionalOrThrow(Error.self, a[1])
+                .map { parameters in
+                    return try castOptionalOrThrow(Error.self, parameters[1])
                 }
         }
         #endif
 
         #if os(iOS)
 
-        // MARK: Pausing Location Updates
+        // MARK: Pausing Location Updates 위치정보 업데이트 일시정지 관련
         /**
         Reactive wrapper for `delegate` message.
         */
@@ -238,6 +239,7 @@ extension Reactive where Base: CLLocationManager {
     }
 
 
+    //optional이 아닌 object를 resultType으로 캐스팅하여 반환. (예외 처리 존재)
     private func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
         guard let returnValue = object as? T else {
             throw RxCocoaError.castingError(object: object, targetType: resultType)
@@ -246,10 +248,16 @@ extension Reactive where Base: CLLocationManager {
         return returnValue
     }
 
+    //optional object를 resultType으로 캐스팅하여 반환. (예외 처리 존재)
+    //여기서 object의 타입이 Any?가 아니고 Any인 부분에 대하여. - delegate.methodInvoked()에 의해 메소드 파라미터들은 Any로 캐스팅되고 [Any] 배열로 반환된다. 따라서 특정 파라미터는 Any타입이라고 보여도 사실은 nil일 수 있다. (이를테면 didFinishDeferredUpdatesWithError의 두번째 파라미터는 Error? 옵셔널인데, Any로 캐스팅되어도 사실 nil일 수 있다는 것)
+//참고하자면 옵셔널 프로퍼티는 Any, Any?로 언제든 타입 캐스팅이 가능하다. Any타입인데 nil일 수도 있다는 것! 이 부분에 대해 컴파일러가 특정 형태로 캐스팅을 강제하지 않는다는 것은 꽤나 의외이다.
+//왜 methodInvoked()에서는 Any?가 아닌 Any로 파라미터 타입 캐스팅을 설계한걸까. 그러고보니 methodInvoked에서는 파라미터들의 개수도 알 수 없겠구나. index out of range도 있을 수 있을 듯. 사용자가 잘못 사용한다면.
     private func castOptionalOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T? {
-        if NSNull().isEqual(object) {
+        if NSNull().isEqual(object) {   // object == nil 로 조건문을 바꾸면 warning 표시.
             return nil
         }
+        //NSNull: nil을 허용하지 않는 콜렉션에서 null value를 대표하는 싱글톤 오브젝트
+        //nil이지만 nil이 아닌것처럼 쓸 수 있다는 건가?
 
         guard let returnValue = object as? T else {
             throw RxCocoaError.castingError(object: object, targetType: resultType)

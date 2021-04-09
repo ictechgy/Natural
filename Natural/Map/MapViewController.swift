@@ -141,7 +141,7 @@ class MapViewController: UIViewController {
             }
         //1번만 실행되고 끝나므로 retain cycle은 고려하지 않아도 됨.
         
-        //(앱 실행 시)네이버 지도의 경우 위치 권한이 있으면 현재 위치를, 위치 권한이 없는 경우 이전에 보고 있던 마지막 좌표지점을 보여주는 것으로 판단 됨.
+        //네이버 지도의 경우 앱 실행 시 기본적으로 이전에 보고 있던 마지막 좌표지점을 보여주는데, 위치권한이 있다면 현재 위치로 cameraUpdate를 수행해주는 것으로 보인다. (마지막 위치가 없는 경우 서울 중심이 default)
     }
     
     func bindLocationManagerDelegates() {
