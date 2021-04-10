@@ -110,25 +110,25 @@ extension Reactive where Base: CLLocationManager {
                 }
         }
 
-        // MARK: Responding to Heading Events
+        // MARK: Responding to Heading Events 방향 이벤트에 대한 응답
         /**
         Reactive wrapper for `delegate` message.
         */
         public var didUpdateHeading: Observable<CLHeading> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didUpdateHeading:)))
-                .map { a in
-                    return try castOrThrow(CLHeading.self, a[1])
+                .map { parameters in
+                    return try castOrThrow(CLHeading.self, parameters[1])
                 }
         }
 
-        // MARK: Responding to Region Events
+        // MARK: Responding to Region Events 지역 이벤트에 대한 응답
         /**
         Reactive wrapper for `delegate` message.
         */
         public var didEnterRegion: Observable<CLRegion> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didEnterRegion:)))
-                .map { a in
-                    return try castOrThrow(CLRegion.self, a[1])
+                .map { parameters in
+                    return try castOrThrow(CLRegion.self, parameters[1])
                 }
         }
 
@@ -137,8 +137,8 @@ extension Reactive where Base: CLLocationManager {
         */
         public var didExitRegion: Observable<CLRegion> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didExitRegion:)))
-                .map { a in
-                    return try castOrThrow(CLRegion.self, a[1])
+                .map { parameters in
+                    return try castOrThrow(CLRegion.self, parameters[1])
                 }
         }
 
@@ -152,10 +152,10 @@ extension Reactive where Base: CLLocationManager {
         @available(OSX 10.10, *)
         public var didDetermineStateForRegion: Observable<(state: CLRegionState, region: CLRegion)> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didDetermineState:for:)))
-                .map { a in
-                    let stateNumber = try castOrThrow(NSNumber.self, a[1])
+                .map { parameters in
+                    let stateNumber = try castOrThrow(NSNumber.self, parameters[1])
                     let state = CLRegionState(rawValue: stateNumber.intValue) ?? CLRegionState.unknown
-                    let region = try castOrThrow(CLRegion.self, a[2])
+                    let region = try castOrThrow(CLRegion.self, parameters[2])
                     return (state: state, region: region)
                 }
         }
@@ -165,9 +165,9 @@ extension Reactive where Base: CLLocationManager {
         */
         public var monitoringDidFailForRegionWithError: Observable<(region: CLRegion?, error: Error)> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:monitoringDidFailFor:withError:)))
-                .map { a in
-                    let region = try castOptionalOrThrow(CLRegion.self, a[1])
-                    let error = try castOrThrow(Error.self, a[2])
+                .map { parameters in
+                    let region = try castOptionalOrThrow(CLRegion.self, parameters[1])
+                    let error = try castOrThrow(Error.self, parameters[2])
                     return (region: region, error: error)
                 }
         }
@@ -177,8 +177,8 @@ extension Reactive where Base: CLLocationManager {
         */
         public var didStartMonitoringForRegion: Observable<CLRegion> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didStartMonitoringFor:)))
-                .map { a in
-                    return try castOrThrow(CLRegion.self, a[1])
+                .map { parameters in
+                    return try castOrThrow(CLRegion.self, parameters[1])
                 }
         }
 
@@ -186,32 +186,56 @@ extension Reactive where Base: CLLocationManager {
 
         #if os(iOS)
 
-        // MARK: Responding to Ranging Events
+        // MARK: Responding to Ranging Events 범위 이벤트에 대한 응답
         /**
         Reactive wrapper for `delegate` message.
         */
+        public var didRangeBeaconsSatisfyingConstraint: Observable<(beacons: [CLBeacon], constraint: CLBeaconIdentityConstraint)> {
+            return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didRange:satisfying:)))
+                .map { parameters in
+                    let beacons = try castOrThrow([CLBeacon].self, parameters[1])
+                    let constraint = try castOrThrow(CLBeaconIdentityConstraint.self, parameters[2])
+                    return (beacons: beacons, constraint: constraint)
+                }
+        }
+        
+        /**
+        Reactive wrapper for `delegate` message.(deprecated)
+        */
         public var didRangeBeaconsInRegion: Observable<(beacons: [CLBeacon], region: CLBeaconRegion)> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didRangeBeacons:in:)))
-                .map { a in
-                    let beacons = try castOrThrow([CLBeacon].self, a[1])
-                    let region = try castOrThrow(CLBeaconRegion.self, a[2])
+                .map { parameters in
+                    let beacons = try castOrThrow([CLBeacon].self, parameters[1])
+                    let region = try castOrThrow(CLBeaconRegion.self, parameters[2])
                     return (beacons: beacons, region: region)
+                }
+        }
+        
+        /**
+        Reactive wrapper for `delegate` message.
+        */
+        public var didFailRangingBeaconsForConstraintWithError: Observable<(constraint: CLBeaconIdentityConstraint, error: Error)> {
+            return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didFailRangingFor:error:)))
+                .map { parameters in
+                    let constraint = try castOrThrow(CLBeaconIdentityConstraint.self, parameters[1])
+                    let error = try castOrThrow(Error.self, parameters[2])
+                    return (constraint: constraint, error: error)
                 }
         }
 
         /**
-        Reactive wrapper for `delegate` message.
+        Reactive wrapper for `delegate` message.(deprecated)
         */
         public var rangingBeaconsDidFailForRegionWithError: Observable<(region: CLBeaconRegion, error: Error)> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:rangingBeaconsDidFailFor:withError:)))
-                .map { a in
-                    let region = try castOrThrow(CLBeaconRegion.self, a[1])
-                    let error = try castOrThrow(Error.self, a[2])
+                .map { parameters in
+                    let region = try castOrThrow(CLBeaconRegion.self, parameters[1])
+                    let error = try castOrThrow(Error.self, parameters[2])
                     return (region: region, error: error)
                 }
         }
 
-        // MARK: Responding to Visit Events
+        // MARK: Responding to Visit Events 방문이벤트에 대한 응답
         /**
         Reactive wrapper for `delegate` message.
         */
