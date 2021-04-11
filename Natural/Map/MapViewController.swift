@@ -149,7 +149,7 @@ class MapViewController: UIViewController {
         locationManager = CLLocationManager()
         
         //위치 권한 변경에 대한 subscribe
-        locationManager.rx.locationManagerDidChangeAuthorization
+        locationManager.rx.didChangeAuthorizationStatus
             .subscribe(onNext: { [weak self] in
                 
                 self?.naverMapView.showLocationButton = false  //내 위치 버튼 기본 값 보이지 않음으로 설정
@@ -451,6 +451,7 @@ extension MapViewController: NMFMapViewCameraDelegate, NMFMapViewTouchDelegate {
 extension MapViewController: CLLocationManagerDelegate {
     
     //CLLocationManager의 delegate가 설정되는 초기 및 권한이 변경되었을때 호출된다.(설정에서 권한을 변경하고 돌아온 경우에도 호출이 되는 것 확인)
+    //정확히 말하자면 delegate가 설정되는 초기에 호출된다기보다는 'App이 locationManager를 생성한 때에 delegate에게 알린다.'가 맞는 표현일 듯.
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         naverMapView.showLocationButton = false  //내 위치 버튼 기본 값 보이지 않음으로 설정
         let alertCkKey = "AlertCkKey"

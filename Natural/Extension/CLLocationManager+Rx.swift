@@ -242,22 +242,21 @@ extension Reactive where Base: CLLocationManager {
         @available(iOS 8.0, *)
         public var didVisit: Observable<CLVisit> {
             return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didVisit:)))
-                .map { a in
-                    return try castOrThrow(CLVisit.self, a[1])
+                .map { parameters in
+                    return try castOrThrow(CLVisit.self, parameters[1])
                 }
         }
 
         #endif
 
-        // MARK: Responding to Authorization Changes
+        // MARK: Responding to Authorization Changes 권한 변경에 대한 응답
         /**
         Reactive wrapper for `delegate` message.
         */
-        public var didChangeAuthorizationStatus: Observable<CLAuthorizationStatus> {
-            return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didChangeAuthorization:)))
-                .map { a in
-                    let number = try castOrThrow(NSNumber.self, a[1])
-                    return CLAuthorizationStatus(rawValue: Int32(number.intValue)) ?? .notDetermined
+        public var didChangeAuthorizationStatus: Observable<Void> {
+            return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManagerDidChangeAuthorization(_:)))
+                .map { _ in
+                    return ()
                 }
         }
     }
