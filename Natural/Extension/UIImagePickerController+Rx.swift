@@ -23,4 +23,17 @@ import RxCocoa
  https://github.com/ReactiveX/RxSwift/blob/main/RxExample/RxExample/iOS/AppDelegate.swift
  */
 
-
+extension Reactive where Base: UIImagePickerController {
+    
+    /*
+     //처음에 생각했던 delegate 프로퍼티 형태
+    var delegate: DelegateProxy<UIImagePickerController, UIImagePickerControllerDelegate & UINavigationControllerDelegate> {
+        RxUIImagePickerControllerDelegateProxy.proxy(for: self.base)
+    }
+     */
+    
+    //delegate 프로퍼티는 이미 존재한다. (UINavigationController의 UINavigationControllerDelegateProxy관련 Extension에 의해)
+    //해당 delegate는 DelegateProxy<UINavigationController, UINavigationControllerDelegate> 타입일텐데 어떻게 여기서 UIImagePickerControllerDelegate로서의 역할도 수행하게 되는 걸까? 아마도 delegate(proxy)를 만들 때(register) UINavigationController인자에 imagePickerController를 넘겨줘서 그런 거일 듯? 실제로 UIImagePickerController는 UINavigationController를 채택하여 구현되어 있다.(Reactive가 extension되어있는 특정 클래스를 채택하면 extension도 같이 딸려오는 듯)
+    
+    
+}

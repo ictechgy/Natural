@@ -21,6 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         FirebaseApp.configure()
         setMapKey()
         
+        RxUIImagePickerControllerDelegateProxy.register { imagePickerController -> RxUIImagePickerControllerDelegateProxy in
+            RxUIImagePickerControllerDelegateProxy(imagePicker: imagePickerController)
+        }
+        
         guard let _ = (scene as? UIWindowScene) else { return }
     }
 
