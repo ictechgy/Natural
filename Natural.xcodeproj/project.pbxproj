@@ -14,6 +14,7 @@
 		C40D44A725FD15C600770C6C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44A625FD15C600770C6C /* DetailViewController.swift */; };
 		C40D44AB25FFAAAC00770C6C /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44AA25FFAAAC00770C6C /* AddViewController.swift */; };
 		C40D44AF25FFAF5A00770C6C /* AddViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */; };
+		C40FCA7126258154004086A3 /* UIImagePickerController+RxCreate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C40FCA7026258154004086A3 /* UIImagePickerController+RxCreate.swift */; };
 		C48FB42725E5680000E3FF26 /* Keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = C48FB42625E5680000E3FF26 /* Keys.plist */; };
 		C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C48FB42925E6662B00E3FF26 /* MapViewModel.swift */; };
 		C48FB42D25E6C44400E3FF26 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */; };
@@ -42,6 +43,7 @@
 		C40D44A625FD15C600770C6C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		C40D44AA25FFAAAC00770C6C /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		C40D44AE25FFAF5A00770C6C /* AddViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewModel.swift; sourceTree = "<group>"; };
+		C40FCA7026258154004086A3 /* UIImagePickerController+RxCreate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImagePickerController+RxCreate.swift"; sourceTree = "<group>"; };
 		C48FB42625E5680000E3FF26 /* Keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Keys.plist; sourceTree = "<group>"; };
 		C48FB42925E6662B00E3FF26 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		C48FB42C25E6C44400E3FF26 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 				C4B7A674260F7E4A0009B7EE /* CLLocationManager+Rx.swift */,
 				C4B7A6AB261E14B60009B7EE /* RxUIImagePickerControllerDelegateProxy.swift */,
 				C4B7A678261B57A10009B7EE /* UIImagePickerController+Rx.swift */,
+				C40FCA7026258154004086A3 /* UIImagePickerController+RxCreate.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -306,6 +309,7 @@
 				C4D026CA25F4DC9700D55196 /* BottomSheetView.swift in Sources */,
 				C4BE560C25E4134500A83CC2 /* SceneDelegate.swift in Sources */,
 				C4B7A675260F7E4A0009B7EE /* CLLocationManager+Rx.swift in Sources */,
+				C40FCA7126258154004086A3 /* UIImagePickerController+RxCreate.swift in Sources */,
 				C4B7A685261D8E7A0009B7EE /* RxCLLocationManagerDelegateProxy.swift in Sources */,
 				C40A7BD3260C8D0E001EDDD4 /* NMFMapView+Rx.swift in Sources */,
 				C48FB42A25E6662B00E3FF26 /* MapViewModel.swift in Sources */,
