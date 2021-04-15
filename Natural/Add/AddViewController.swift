@@ -14,6 +14,7 @@ class AddViewController: UIViewController {
     var disposeBag = DisposeBag()
     
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageViewTapGestureRecognizer: UITapGestureRecognizer!
     @IBOutlet weak var typeField: UITextField!
     @IBOutlet weak var roadAddressField: UITextField!
     @IBOutlet weak var numberAddressField: UITextField!
@@ -43,6 +44,8 @@ class AddViewController: UIViewController {
         
         bindOtherFields()
         setUpPickerView()
+        
+        bindImageView()
     }
     
     private func bindAddressFieldsEnabled() {
@@ -159,6 +162,29 @@ class AddViewController: UIViewController {
         
         typeField.inputView = pickerView
         typeField.inputAccessoryView = pickerToolbar
+        
+        
+    }
+    
+    private func bindImageView() {
+        let actionHandler: (UIAlertAction) -> Void = { action in
+            
+        }
+        
+        let alertController = UIAlertController(title: "사진 추가하기", message: "추가 방법을 선택해주세요", preferredStyle: .actionSheet)
+        let fromCamera = UIAlertAction(title: "카메라", style: .default, handler: nil)
+        let fromLibrary = UIAlertAction(title: "사진 앨범", style: .default, handler: nil)
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alertController.addAction(fromCamera)
+        alertController.addAction(fromLibrary)
+        alertController.addAction(cancel)
+        
+        imageViewTapGestureRecognizer.rx.event
+            .subscribe(onNext: { [weak self] _ in
+                self?.present(alertController, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
         
         
     }
