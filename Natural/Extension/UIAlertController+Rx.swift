@@ -49,3 +49,29 @@ extension Reactive where Base: UIAlertController {
 
 }
 
+//또는 내가 생각해본 가능한 다른 방식(비슷하기는 하다.)
+extension UIAlertController {
+    //여기서 self에 별도로 UIAlertAction은 추가하지 않았다고 가정
+    func present(in parent: UIViewController, actions: [(title: String, style: UIAlertAction.Style)]) -> Observable<UIAlertAction> {
+        return Observable.create { [weak parent] emitter in
+            
+            actions.forEach { action in
+                let alertAction = UIAlertAction(title: action.title, style: action.style) {
+                    emitter.onNext($0)
+                    emitter.onCompleted()
+                }
+                self.addAction(alertAction)
+            }
+            
+            guard let parent = parent else {
+                emitter.onCompleted()
+                return Disposables.create()
+            }
+            parent.present(self, animated: true, completion: nil)
+            
+            return Disposables.create {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+}
