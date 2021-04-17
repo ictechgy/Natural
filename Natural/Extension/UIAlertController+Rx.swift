@@ -22,13 +22,13 @@ extension Reactive where Base: UIAlertController {
         }
     }
 
-    static func present(in parent: UIViewController, title: String?, message: String?, style: UIAlertController.Style, actions: [AlertAction]) -> Observable<UIAlertAction> {
+    static func present(in parent: UIViewController, title: String?, message: String?, style: UIAlertController.Style, actions: [AlertAction]) -> Observable<AlertAction> {
         return Observable.create { [weak parent] observer in
             let alertController = UIAlertController(title: title, message: message, preferredStyle: style)
 
             actions.forEach { action in
-                let alertAction = UIAlertAction(title: action.title, style: action.style) { alertAction in
-                    observer.onNext(alertAction)
+                let alertAction = UIAlertAction(title: action.title, style: action.style) { _ in
+                    observer.onNext(action)     //index나 UIAlertAction 인스턴스를 스트림에 넘길 수도 있다.
                     observer.onCompleted()
                 }
                 alertController.addAction(alertAction)
@@ -39,6 +39,7 @@ extension Reactive where Base: UIAlertController {
                 return Disposables.create()
             }
             parent.present(alertController, animated: true, completion: nil)
+            //parent?.present(alertController, animated: true, completion: nil)로 하는 경우 parent가 없는 상황에서 스트림이 끝나지 않을 수 있음
             
             return Disposables.create {
                 alertController.dismiss(animated: true, completion: nil)
@@ -51,13 +52,13 @@ extension Reactive where Base: UIAlertController {
 
 //또는 내가 생각해본 가능한 다른 방식(비슷하기는 하다.)
 extension UIAlertController {
-    //여기서 self에 별도로 UIAlertAction은 추가하지 않았다고 가정
-    func present(in parent: UIViewController, actions: [(title: String, style: UIAlertAction.Style)]) -> Observable<UIAlertAction> {
+    //self에 별도로 UIAlertAction을 미리 추가하지 않았다고 가정
+    func present(in parent: UIViewController, actions: [(title: String, style: UIAlertAction.Style)]) -> Observable<(title: String, style: UIAlertAction.Style)> {
         return Observable.create { [weak parent] emitter in
             
             actions.forEach { action in
-                let alertAction = UIAlertAction(title: action.title, style: action.style) {
-                    emitter.onNext($0)
+                let alertAction = UIAlertAction(title: action.title, style: action.style) { _ in
+                    emitter.onNext(action)  //index나 UIAlertAction 인스턴스를 스트림에 넘기는 것 가능.
                     emitter.onCompleted()
                 }
                 self.addAction(alertAction)
