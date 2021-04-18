@@ -13,7 +13,7 @@ import RxCocoa
 
 extension Reactive where Base: UIAlertController {
 
-    struct AlertAction {
+    struct AlertAction: Equatable {
         var title: String?
         var style: UIAlertAction.Style
 
@@ -22,7 +22,7 @@ extension Reactive where Base: UIAlertController {
         }
     }
 
-    static func present(in parent: UIViewController, title: String?, message: String?, style: UIAlertController.Style, actions: [AlertAction]) -> Observable<AlertAction> {
+    static func present(in parent: UIViewController?, title: String?, message: String?, style: UIAlertController.Style, actions: [AlertAction]) -> Observable<AlertAction> {
         return Observable.create { [weak parent] observer in
             let alertController = UIAlertController(title: title, message: message, preferredStyle: style)
 

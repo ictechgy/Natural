@@ -167,26 +167,36 @@ class AddViewController: UIViewController {
     }
     
     private func bindImageView() {
-        let actionHandler: (UIAlertAction) -> Void = { action in
+        
+        let fromCamera = Reactive<UIAlertController>.AlertAction.action(title: "카메라", style: .default)
+        let fromLibrary = Reactive<UIAlertController>.AlertAction.action(title: "사진 앨범", style: .default)
+        let cancel = Reactive<UIAlertController>.AlertAction.action(title: "취소", style: .cancel)
+        
+        imageViewTapGestureRecognizer.rx.event  //메인 시퀀스
+            .map { [weak self] _ -> Observable<Reactive<UIAlertController>.AlertAction> in
+                
+                //분기되는 시퀀스
+                return UIAlertController.rx.present(in: self, title: "사진 추가하기", message: "추가 방법을 선택해주세요.", style: .actionSheet, actions: [fromCamera, fromLibrary, cancel]).take(1)     //onCompleted 시점이 존재하므로 take() operator를 쓰지 않아도 될 듯
+            }
+            .flatMap { $0 }
+            .map { [weak self] alertAction -> Observable<UIImagePickerController>? in
+                //alertAction 선택에 따라 분기시퀀스를 또 만든다.
+                switch alertAction {
+                case fromCamera:
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        return UIImagePickerController.rx.createWithParent(self) { picker in
+                            picker.sourceType = .camera
+                            picker.allowsEditing = false
+                        }.take(1)       //이 시퀀스의 경우 onCompleted시점이 명확히 정해져 있지 않으므로 take(1)을 써야 할 듯.
+                    }
+                case fromLibrary:
+                    return
+                default:    //cancel 포함
+                    break
+                }
+                return nil
+            }
             
-        }
-        
-        let alertController = UIAlertController(title: "사진 추가하기", message: "추가 방법을 선택해주세요", preferredStyle: .actionSheet)
-        let fromCamera = UIAlertAction(title: "카메라", style: .default, handler: nil)
-        let fromLibrary = UIAlertAction(title: "사진 앨범", style: .default, handler: nil)
-        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        
-        alertController.addAction(fromCamera)
-        alertController.addAction(fromLibrary)
-        alertController.addAction(cancel)
-        
-        imageViewTapGestureRecognizer.rx.event
-            .subscribe(onNext: { [weak self] _ in
-                self?.present(alertController, animated: true, completion: nil)
-            })
-            .disposed(by: disposeBag)
-        
-        
     }
 
     /*

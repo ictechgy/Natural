@@ -64,6 +64,7 @@ extension Reactive where Base: UIImagePickerController {
             observer.on(.next(imagePicker))
             
             //정상적으로 다 수행된 경우에 대한 onCompleted가 명시적으로 존재하지 않는다.
+            //만약 여기서 바로 observer.onCompleted()를 호출하면 컨트롤러가 나오자 마자 바로 dismiss될 듯. 나오자 마자 바로 onCompleted 상태 되면서 아래 Dispose 구문 중 dismissViewController(,animated)가 작동될테니까. 
             return Disposables.create(dismissDisposable, Disposables.create {
                     dismissViewController(imagePicker, animated: animated)  //이 스트림이 dispose될 때 imagePicker를 dismiss하기 위해 이렇게 둔 듯 하다.
                 })
