@@ -180,7 +180,7 @@ class AddViewController: UIViewController {
             }
             .flatMap { $0 }
             .map { [weak self] alertAction -> Observable<UIImagePickerController>? in
-                //alertAction 선택에 따라 분기시퀀스를 또 만든다.
+                //alertAction 선택에 따라 시퀀스를 다시 분기.
                 switch alertAction {
                 case fromCamera:
                     if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -188,15 +188,30 @@ class AddViewController: UIViewController {
                             picker.sourceType = .camera
                             picker.allowsEditing = false
                         }.take(1)       //이 시퀀스의 경우 onCompleted시점이 명확히 정해져 있지 않으므로 take(1)을 써야 할 듯.
+                    }else {
+                        //카메라 사용이 불가능한 경우
+                        let ok = Reactive<UIAlertController>.AlertAction.action(title: "확인", style: .default)
+                        _ = UIAlertController.rx.present(in: self, title: "오류 발생", message: "카메라 사용이 불가능합니다.", style: .alert, actions: [ok])
+                            .take(1)
+                            .subscribe(onNext: { _ in })    //별도로 할 것 없음
                     }
                 case fromLibrary:
-                    return
+                    return UIImagePickerController.rx.createWithParent(self) { picker in
+                        picker.sourceType = .photoLibrary
+                        picker.allowsEditing = false
+                    }.take(1)
                 default:    //cancel 포함
                     break
                 }
                 return nil
             }
-            
+            .filter{ $0 != nil }
+            .flatMap{ $0! }
+            .map{ $0.rx.didFinishPickingMediaWithInfo.take(1) }
+            .flatMap{ $0 }
+            .map{ info in
+                
+            }
     }
 
     /*

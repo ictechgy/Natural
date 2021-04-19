@@ -38,11 +38,11 @@ extension Reactive where Base: UIImagePickerController {
     /**
       Reactive wrapper for `delegate` message.
     */
-     public var didFinishPickingMediaWithInfo: Observable<[UIImagePickerController.InfoKey : AnyObject]> {
+     public var didFinishPickingMediaWithInfo: Observable<[UIImagePickerController.InfoKey : Any]> {
          return delegate
              .methodInvoked(#selector(UIImagePickerControllerDelegate.imagePickerController(_:didFinishPickingMediaWithInfo:)))
              .map { parameters in
-                 return try castOrThrow(Dictionary<UIImagePickerController.InfoKey, AnyObject>.self, parameters[1])
+                 return try castOrThrow(Dictionary<UIImagePickerController.InfoKey, Any>.self, parameters[1])
              }
      }
 
