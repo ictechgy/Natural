@@ -173,13 +173,12 @@ class AddViewController: UIViewController {
         let cancel = Reactive<UIAlertController>.AlertAction.action(title: "취소", style: .cancel)
         
         imageViewTapGestureRecognizer.rx.event  //메인 시퀀스
-            .map { [weak self] _ -> Observable<Reactive<UIAlertController>.AlertAction> in
+            .flatMapLatest { [weak self] _ -> Observable<Reactive<UIAlertController>.AlertAction> in
                 
                 //분기되는 시퀀스
                 return UIAlertController.rx.present(in: self, title: "사진 추가하기", message: "추가 방법을 선택해주세요.", style: .actionSheet, actions: [fromCamera, fromLibrary, cancel]).take(1)     //onCompleted 시점이 존재하므로 take() operator를 쓰지 않아도 될 듯
             }
-            .flatMap { $0 }
-            .map { [weak self] alertAction -> Observable<UIImagePickerController>? in
+            .map { [weak self] alertAction -> Observable<UIImagePickerController>? in   //여기서 flatMap을 쓰고 예외상황 시 nil 대신에 Observable.just에 의미없는 값을 집어넣어서 반환하는 방식도 가능할 듯. 물론 반환 타입은 조금 달라져야겠지.. optional 아니게
                 //alertAction 선택에 따라 시퀀스를 다시 분기.
                 switch alertAction {
                 case fromCamera:
@@ -207,11 +206,18 @@ class AddViewController: UIViewController {
             }
             .filter{ $0 != nil }
             .flatMap{ $0! }
-            .map{ $0.rx.didFinishPickingMediaWithInfo.take(1) }
-            .flatMap{ $0 }
+            .flatMapLatest{ $0.rx.didFinishPickingMediaWithInfo.take(1) } //flatMap은 Observable이 중첩되어 내려온 경우에만 쓸 수 있는게 아니라 중첩될 것으로 예상되는 부분에서 바로 쓸 수도 있구나.
             .map{ info in
-                
+                return info[.originalImage] as? UIImage
             }
+            .bind(to: imageView.rx.image)
+            .disposed(by: disposeBag)
+        
+        //map: 스트림 데이터의 변화
+        //flatMap: 스트림 데이터가 Observable<데이터>로 변화할 것인데(또는 이미 변화된 것에 대해) 이 중첩되어 안에 있는 데이터를 바로 꺼낼 것
+        //flatMapLatest: flatMap과 같지만 가장 최근의 것에만 집중
+        
+        
     }
 
     /*
