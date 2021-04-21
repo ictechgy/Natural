@@ -155,6 +155,10 @@ class AddModel {
         }
     }
     
+    func addData(<#parameters#>) -> <#return type#> {
+        <#function body#>
+    }
+    
     enum AddError: Error {
         case keyAcquisitionError
         case urlError

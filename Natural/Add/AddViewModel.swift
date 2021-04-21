@@ -17,6 +17,7 @@ class AddViewModel {
         return Observable.just(kindOfMarkers)
     }
     
+    var imageRelay: BehaviorRelay<UIImage?> = BehaviorRelay(value: nil)
     var typeRelay: BehaviorRelay = BehaviorRelay(value: "")
     var roadAddressRelay: BehaviorRelay = BehaviorRelay(value: "")
     var numberAddressRelay: BehaviorRelay = BehaviorRelay(value: "")
@@ -49,7 +50,21 @@ class AddViewModel {
             .disposed(by: disposeBag)
         //문제는.. VC의 viewDidLoad 에서 Address 데이터를 한번 subscribe할 때 제대로 된 값이 미리 도착해 있을 것이냐는 것.. 양방향 바인딩하면 좋은데..
         //-> onDisposed에서 쓰일 BehaviorRelay들을 추가적으로 둠으로써 해결
+        
+        //addButtonEnabled 설정
+        Observable.combineLatest(imageRelay, typeRelay, roadAddressRelay, numberAddressRelay) { image, type, roadAddr, numberAddr in   //필수 기입사항
+            return (image != nil) && !type.isEmpty && !roadAddr.isEmpty && !numberAddr.isEmpty
+        }.distinctUntilChanged()
+        .bind(to: addButtonEnabled)
+        .disposed(by: disposeBag)
     }
     
-    
+    func addButtonTapped() {
+        //데이터를 서버에 추가
+        Observable.zip(imageRelay, typeRelay, roadAddressRelay,  numberAddressRelay, detailAddressRelay, characterRelay, manageRelay) { image, type, roadAddr, numberAddr, detailAddr, character, manage in //image, type, roadAddr, numberAddr에는 값이 존재할 것이고 detailAddr, character, manage는 빈 문자열이 들어있을 수 있다.
+            
+        }.take(1)
+        
+        
+    }
 }

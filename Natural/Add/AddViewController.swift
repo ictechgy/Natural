@@ -46,6 +46,7 @@ class AddViewController: UIViewController {
         setUpPickerView()
         
         bindImageView()
+        bindAddButton()
     }
     
     private func bindAddressFieldsEnabled() {
@@ -102,21 +103,6 @@ class AddViewController: UIViewController {
             .bind(to: viewModel.manageRelay)
             .disposed(by: disposeBag)
         
-        viewModel.addButtonEnabled.distinctUntilChanged()
-            .asDriver(onErrorJustReturn: false)
-            .drive { [weak self] isEnabled in
-                self?.addButton.isEnabled = isEnabled
-                
-                var bgColor: UIColor
-                if isEnabled {
-                    bgColor = .systemGreen
-                }else {
-                    bgColor = .systemGray
-                }
-                
-                self?.addButton.backgroundColor = bgColor
-            }
-            .disposed(by: disposeBag)
     }
     
     private func setUpPickerView() {
@@ -210,14 +196,41 @@ class AddViewController: UIViewController {
             .map{ info in
                 return info[.originalImage] as? UIImage
             }
-            .bind(to: imageView.rx.image)
+            .subscribe(onNext: { [weak self] image in
+                self?.imageView.image = image
+                self?.viewModel.imageRelay.accept(image) //image 데이터를 ViewModel에 같이 바로 바인딩
+            })
             .disposed(by: disposeBag)
         
         //map: 스트림 데이터의 변화
         //flatMap: 스트림 데이터가 Observable<데이터>로 변화할 것인데(또는 이미 변화된 것에 대해) 이 중첩되어 안에 있는 데이터를 바로 꺼낼 것
         //flatMapLatest: flatMap과 같지만 가장 최근의 것에만 집중
         
+    }
+    
+    private func bindAddButton() {
         
+        viewModel.addButtonEnabled.distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
+            .drive { [weak self] isEnabled in
+                self?.addButton.isEnabled = isEnabled
+                
+                var bgColor: UIColor
+                if isEnabled {
+                    bgColor = .systemGreen
+                }else {
+                    bgColor = .systemGray
+                }
+                
+                self?.addButton.backgroundColor = bgColor
+            }
+            .disposed(by: disposeBag)
+        
+        addButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.viewModel.addButtonTapped()
+            })
+            .disposed(by: disposeBag)
     }
 
     /*
