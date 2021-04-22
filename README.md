@@ -21,10 +21,12 @@
    
 ## 🚀 사용했거나 사용하려 했던 패턴/스킬 (Used Or Tried Patterns And Skills)
 1. RxSwift with MVVM
+2. DelegateProxy with DelegateProxyType
    
 &nbsp;   
    
 ## 💦 만들면서 힘들었던 점 (Difficulties)
+1. Code Refactoring(Delegate 패턴을 DelegateProxy 이용하여 리팩토링)
    
 &nbsp;   
    
