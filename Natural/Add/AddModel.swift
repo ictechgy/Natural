@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import Firebase
 
 class AddModel {
     
@@ -156,7 +157,11 @@ class AddModel {
     }
     
     func addData(<#parameters#>) -> <#return type#> {
-        <#function body#>
+        
+        let db = Firestore.firestore()
+        let newMarkerRef = db.collection(<#T##collectionPath: String##String#>).document()
+        
+        MarkerInfo(id: <#T##String#>, informerId: <#T##String#>, informerNickname: <#T##String#>, roadNameAddress: <#T##String#>, landLodNumberAddress: <#T##String#>, detailAddress: <#T##String#>, geoHash: <#T##String#>, latitude: <#T##Double#>, longitude: <#T##Double#>, managementEntity: <#T##String#>, photoRef: <#T##String#>, characteristics: <#T##String#>, type: <#T##MarkerType#>)
     }
     
     enum AddError: Error {

@@ -61,7 +61,8 @@ class AddViewModel {
     
     func addButtonTapped() {
         //데이터를 서버에 추가
-        Observable.zip(imageRelay, typeRelay, roadAddressRelay,  numberAddressRelay, detailAddressRelay, characterRelay, manageRelay) { image, type, roadAddr, numberAddr, detailAddr, character, manage in //image, type, roadAddr, numberAddr에는 값이 존재할 것이고 detailAddr, character, manage는 빈 문자열이 들어있을 수 있다.
+        Observable.zip(imageRelay, typeRelay, roadAddressRelay,  numberAddressRelay, detailAddressRelay, characterRelay, manageRelay) { image, type, roadAddr, numberAddr, detailAddr, character, manage in //image, type, roadAddr, numberAddr에는 값이 존재할 것이고(해당 값이 존재하는 경우에만 버튼이 눌릴 수 있도록 바인딩 해둠) detailAddr, character, manage는 빈 문자열이 들어있을 수 있다.
+            
             
         }.take(1)
         
