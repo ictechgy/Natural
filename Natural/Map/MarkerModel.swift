@@ -67,6 +67,7 @@ class MarkerModel {
                 matchingDocs.forEach { snapshot in
                     let dictionary: [String: Any] = snapshot.data()
                     
+                    //FirebaseFirestoreSwift 버전으로 인해 자동 역직렬화 불가능
                     let marker = MarkerInfo(
                         id: dictionary["id"] as? String ?? "",
                         informerId: dictionary["informerId"] as? String ?? "",

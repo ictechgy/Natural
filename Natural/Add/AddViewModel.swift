@@ -30,12 +30,19 @@ class AddViewModel {
     var addressFetched: BehaviorRelay = BehaviorRelay(value: false)
     var addButtonEnabled: BehaviorRelay = BehaviorRelay(value: false)
     
+    var latitude: Double
+    var longitude: Double
+    
     var disposeBag = DisposeBag()
     
     init(position: NMGLatLng) {
         
+        //추가버튼을 누른 경우에도 쓰기 위해 별도 저장
+        latitude = position.lat
+        longitude = position.lng
+        
         //position을 가지고 주소 값 가져오기
-        AddModel.shared.coordToAddr(latitude: position.lat, longitude: position.lng)
+        AddModel.shared.coordToAddr(latitude: latitude, longitude: longitude)
             .take(1)
             .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .default))
             .subscribe(onNext: { [weak self] addressInfo in

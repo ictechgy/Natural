@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import Firebase
+import GeoFire
 
 class AddModel {
     
@@ -156,17 +157,89 @@ class AddModel {
         }
     }
     
-    func addData(<#parameters#>) -> <#return type#> {
-        
-        let db = Firestore.firestore()
-        let newMarkerRef = db.collection(<#T##collectionPath: String##String#>).document()
-        
-        MarkerInfo(id: <#T##String#>, informerId: <#T##String#>, informerNickname: <#T##String#>, roadNameAddress: <#T##String#>, landLodNumberAddress: <#T##String#>, detailAddress: <#T##String#>, geoHash: <#T##String#>, latitude: <#T##Double#>, longitude: <#T##Double#>, managementEntity: <#T##String#>, photoRef: <#T##String#>, characteristics: <#T##String#>, type: <#T##MarkerType#>)
+    func addData(image: UIImage, type: String, roadAddr: String, numberAddr: String, detailAddr: String, character: String, manage: String, latitude: Double, longitude: Double) -> Observable<Void> {
+        return Observable.create { emitter in
+            //사진하고 데이터를 별도로 올리게 되는데 원자성을 보존하는 다른 방법이 있을까..? -> 일단 프론트 API쪽에서는 없는 것 같고, Cloud Functions로 백엔드에서 두 데이터간 종속성 두는 방식으로 해결이 가능? .. storage에 사진 미리 올리고 사진이 있는 경우에만 firestore에 올려지는 방식같이..이것도 답은 아닌데..  아니면 앱이 종료되도 작동되도록 백그라운드로 실행을 넘겨야 하나..
+            
+            guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
+                emitter.on(.error(AddError.photoDataError))
+                return Disposables.create()
+            }
+            
+            let db = Firestore.firestore()
+            let storage = Storage.storage()
+            
+            let docRef = db.collection("Markers").document()
+            let imagePath = "Markers/\(docRef.documentID)/1.jpeg"
+            let storageRef = storage.reference(withPath: imagePath)
+            
+            let hash = GFUtils.geoHash(forLocation: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
+            
+            //FirebaseFirestoreSwift 버전으로 인해 커스텀 객체 자동 직렬화 안됨
+            let docData: [String: Any] = [
+                "id": docRef.documentID,
+                "informerId": "",
+                "informerNickname": "",
+                "roadNameAddress": roadAddr,
+                "landLodNumberAddress": numberAddr,
+                "detailAddress": detailAddr,
+                "geoHash": hash,
+                "latitude": latitude,
+                "longitude": longitude,
+                "managementEntity": manage,
+                "photoRef": imagePath,
+                "characteristics": character,
+                "type": type
+            ]
+            
+            //세가지 방법 - 콜백을 중첩해서 쓰거나, 콜백 중 하나를 메소드로 빼서 쓰거나, 아예 두 작업을 별개 메소드로 나누거나(별개의 Observable로)
+            docRef.setData(docData) { error in
+                if let error = error {
+                    //error occurred
+                    emitter.onError(error)
+                }else {
+                    //doc 데이터 추가에 성공한 경우 이미지 데이터
+                    
+                }
+            }
+            
+            let imageTask = storageRef.putData(jpegData, metadata: nil) { metadata, error in
+                
+                guard let metadata = metadata else {
+                    //error occurred
+                    return
+                }
+                
+            }
+            
+            
+            let info = MarkerInfo(
+                id: docRef.documentID,
+                informerId: "",
+                informerNickname: "",
+                roadNameAddress: roadAddr,
+                landLodNumberAddress: numberAddr,
+                detailAddress: detailAddr,
+                geoHash: hash,
+                latitude: latitude,
+                longitude: longitude,
+                managementEntity: manage,
+                photoRef: imagePath,
+                characteristics: character,
+                type: MarkerType.init(rawValue: type) ?? .unknown
+            )
+            
+            
+            
+            return Disposables.create()
+        }
     }
     
     enum AddError: Error {
         case keyAcquisitionError
         case urlError
         case retrieveDataError
+        
+        case photoDataError
     }
 }
