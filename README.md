@@ -21,7 +21,7 @@
    
 ## 🚀 사용했거나 사용하려 했던 패턴/스킬 (Used Or Tried Patterns And Skills)
 1. RxSwift with MVVM
-2. DelegateProxy with DelegateProxyType
+2. DelegateProxy with DelegateProxyType (Delegate 패턴 썼던 것 리팩토링)   
    
 &nbsp;   
    
@@ -34,7 +34,10 @@ RxSwift만큼이나 어려웠던 DelegateProxy..
 Delegate 패턴은 많이 쓰이긴 하지만 RxSwift의 Observable스타일과는 맞지 않는다. 이를 해결해 주는 것이 바로 DelegateProxy다. (Delegate를 감싸서(?) Observable하게 다룰 수 있도록 해준다. fake delegate object)   
 3. Google Firestore와 GeoFire의 호환성 문제    
 이 문제 때문에 처음에 많이 헤맸다. 최신 Google FireStore에는 GeoFire를 덧붙일 수가 없었다.(의존성 문제로 인해 GeoFire 4.1.0에는 Google FirebaseFirestore 1.x 설치가 필요했었다. - Firebase 라이브러리의 경우 6.x - 현재는 GeoFire에서 의존성 설정을 업데이트 해서 7.x 까지 가능하다. Google API 라이브러리별 버전의 경우 이후에 구글에서 한가지로 통합하였다. - 원래는 라이브러리별로 버전이 달랐다. - )       
-다행히도 pod이 의존성들을 다 고려해서 설치해준 덕분에 큰 고생은 하지 않았다.
+다행히도 pod이 의존성들을 다 고려해서 설치해준 덕분에 큰 고생은 하지 않았다.   
+4. Storyboard Autolayout    
+Autolayout에 대해 아직 완벽히 숙지하지 못했다. 공부를 더 해야 할 것 같다.(코드를 이용하여 동적으로 설정하는 것도..)    
+5. 커스텀 뷰(Custom View)   
 
 &nbsp;   
    
