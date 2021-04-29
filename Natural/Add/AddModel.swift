@@ -157,21 +157,17 @@ class AddModel {
         }
     }
     
-    func addData(image: UIImage, type: String, roadAddr: String, numberAddr: String, detailAddr: String, character: String, manage: String, latitude: Double, longitude: Double) -> Observable<Void> {
+    func addDocData(type: String, roadAddr: String, numberAddr: String, detailAddr: String, character: String, manage: String, latitude: Double, longitude: Double) -> Observable<(docRef: DocumentReference, imagePath: String)> {
+        
         return Observable.create { emitter in
             //사진하고 데이터를 별도로 올리게 되는데 원자성을 보존하는 다른 방법이 있을까..? -> 일단 프론트 API쪽에서는 없는 것 같고, Cloud Functions로 백엔드에서 두 데이터간 종속성 두는 방식으로 해결이 가능? .. storage에 사진 미리 올리고 사진이 있는 경우에만 firestore에 올려지는 방식같이..이것도 답은 아닌데..  아니면 앱이 종료되도 작동되도록 백그라운드로 실행을 넘겨야 하나..
+            //세가지 방법 - 콜백을 중첩해서 쓰거나, 콜백 중 하나를 메소드로 빼서 쓰거나, 아예 두 작업을 별개 메소드로 나누거나(별개의 Observable로)
             
-            guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
-                emitter.on(.error(AddError.photoDataError))
-                return Disposables.create()
-            }
-            
+            let collectionName = "Markers"
+            let folderName = "Markers"
             let db = Firestore.firestore()
-            let storage = Storage.storage()
-            
-            let docRef = db.collection("Markers").document()
-            let imagePath = "Markers/\(docRef.documentID)/1.jpeg"
-            let storageRef = storage.reference(withPath: imagePath)
+            let docRef = db.collection(collectionName).document()
+            let imagePath = "\(folderName)/\(docRef.documentID)/1.jpeg"
             
             let hash = GFUtils.geoHash(forLocation: CLLocationCoordinate2D(latitude: latitude, longitude: longitude))
             
@@ -192,46 +188,53 @@ class AddModel {
                 "type": type
             ]
             
-            //세가지 방법 - 콜백을 중첩해서 쓰거나, 콜백 중 하나를 메소드로 빼서 쓰거나, 아예 두 작업을 별개 메소드로 나누거나(별개의 Observable로)
             docRef.setData(docData) { error in
                 if let error = error {
                     //error occurred
                     emitter.onError(error)
                 }else {
-                    //doc 데이터 추가에 성공한 경우 이미지 데이터
-                    
+                    //doc 데이터 추가에 성공한 경우
+                    emitter.onNext((docRef: docRef, imagePath: imagePath))
+                    emitter.onCompleted()
                 }
             }
             
-            let imageTask = storageRef.putData(jpegData, metadata: nil) { metadata, error in
+            return Disposables.create()
+        }
+    }
+    
+    func addImageData(image: UIImage, docRef: DocumentReference, imagePath: String) -> Observable<Void> {
+        
+        return Observable.create { emitter in
+            let bestQuality: CGFloat = CGFloat(1.0)
+            
+            guard let jpegData = image.jpegData(compressionQuality: bestQuality) else {
+                docRef.delete()
+                emitter.on(.error(AddError.imageDataConversionError))
+                return Disposables.create()
+            }
+            
+            let storage = Storage.storage()
+            let storageRef = storage.reference(withPath: imagePath)
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+            
+            let imageTask = storageRef.putData(jpegData, metadata: metadata) { metadata, error in
                 
-                guard let metadata = metadata else {
+                guard metadata != nil else {
                     //error occurred
+                    docRef.delete()
+                    emitter.onError(error ?? AddError.imageUploadError)
                     return
                 }
                 
+                emitter.onNext(())
+                emitter.onCompleted()
             }
-            
-            
-            let info = MarkerInfo(
-                id: docRef.documentID,
-                informerId: "",
-                informerNickname: "",
-                roadNameAddress: roadAddr,
-                landLodNumberAddress: numberAddr,
-                detailAddress: detailAddr,
-                geoHash: hash,
-                latitude: latitude,
-                longitude: longitude,
-                managementEntity: manage,
-                photoRef: imagePath,
-                characteristics: character,
-                type: MarkerType.init(rawValue: type) ?? .unknown
-            )
-            
-            
-            
-            return Disposables.create()
+         
+            return Disposables.create {
+                imageTask.cancel()
+            }
         }
     }
     
@@ -240,6 +243,7 @@ class AddModel {
         case urlError
         case retrieveDataError
         
-        case photoDataError
+        case imageDataConversionError
+        case imageUploadError
     }
 }

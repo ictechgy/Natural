@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import NMapsMap
+import Firebase
 
 class AddViewModel {
     
@@ -68,11 +69,19 @@ class AddViewModel {
     
     func addButtonTapped() {
         //데이터를 서버에 추가
-        Observable.zip(imageRelay, typeRelay, roadAddressRelay,  numberAddressRelay, detailAddressRelay, characterRelay, manageRelay) { image, type, roadAddr, numberAddr, detailAddr, character, manage in //image, type, roadAddr, numberAddr에는 값이 존재할 것이고(해당 값이 존재하는 경우에만 버튼이 눌릴 수 있도록 바인딩 해둠) detailAddr, character, manage는 빈 문자열이 들어있을 수 있다.
-            
-            
-        }.take(1)
         
+        //AddModel.shared.addDocData를 호출 할 때 image를 미리 넘겨놓는 방식도 가능하다.(doc데이터 추가 성공 시 image가 Observable에 실려 반환되도록 설정하면 zip operator를 중첩하지 않아도 image를 쓸 수 있음)
+        Observable.zip(
+            imageRelay,
+            Observable.zip(typeRelay, roadAddressRelay,  numberAddressRelay, detailAddressRelay, characterRelay, manageRelay) { type, roadAddr, numberAddr, detailAddr, character, manage in //image, type, roadAddr, numberAddr에는 값이 존재할 것이고(해당 값이 존재하는 경우에만 버튼이 눌릴 수 있도록 바인딩 해둠) detailAddr, character, manage는 빈 문자열이 들어있을 수 있다.
+                
+                return AddModel.shared.addDocData(type: type, roadAddr: roadAddr, numberAddr: numberAddr, detailAddr: detailAddr, character: character, manage: manage, latitude: self.latitude, longitude: self.longitude)
+            }
+            .flatMap { $0 }
+            ) { image, docResult in
+            
+        }
+        .take(1)
         
     }
 }
