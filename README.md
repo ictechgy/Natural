@@ -38,6 +38,14 @@ Delegate 패턴은 많이 쓰이긴 하지만 RxSwift의 Observable스타일과�
 4. Storyboard Autolayout    
 Autolayout에 대해 아직 완벽히 숙지하지 못했다. 공부를 더 해야 할 것 같다.(코드를 이용하여 동적으로 설정하는 것도..)    
 5. 커스텀 뷰(Custom View)   
+6. RxSwift에 대한 부족한 이해    
+flatMap operator를 통해 클로저 내부에서 별도의 Observable 데이터를 return하여 메인(바깥) 시퀀스에 싣는 경우 이는 시퀸스의 분기가 아니다. (분기인줄 알았다.)    
+내부 Observable의 데이터 자체를 추출해서 메인 시퀀스에 놓는 것이라고 보면 될 듯 하다. *따라서 flatMap을 통해 추출되는 데이터가 error인 경우 메인 시퀀스에도 영향을 미친다.*   
++ **이에 대한 참고 링크**   
+  - [RxSwift Issue](https://github.com/ReactiveX/RxSwift/issues/1162)   
+  - [곰튀김님 유튜브 - Stream의 분기와 병합](https://www.youtube.com/watch?v=YSYnETTi1pE&t=406s)   
++ 이와는 별도로 참고하면 좋은 링크   
+  - [eungding - Signal과 Driver의 차이](https://eunjin3786.tistory.com/75)
 
 &nbsp;   
    
