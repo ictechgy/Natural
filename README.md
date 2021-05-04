@@ -45,7 +45,8 @@ flatMap operator를 통해 클로저 내부에서 별도의 Observable 데이터
   - [RxSwift Issue](https://github.com/ReactiveX/RxSwift/issues/1162)   
   - [곰튀김님 유튜브 - Stream의 분기와 병합](https://www.youtube.com/watch?v=YSYnETTi1pE&t=406s)   
 + 이와는 별도로 참고하면 좋은 링크   
-  - [eungding - Signal과 Driver의 차이](https://eunjin3786.tistory.com/75)
+  - [eungding - Signal과 Driver의 차이](https://eunjin3786.tistory.com/75)   
+__*flatMap 뿐만 아니라 Observable.zip의 동작과 take의 동작에 대해서도 제대로 이해하지 못한 채 사용했다.*__
 
 &nbsp;   
    
