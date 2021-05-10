@@ -55,6 +55,7 @@ __*flatMap 뿐만 아니라 Observable.zip의 동작과 take의 동작에 대해
   - [take Operator에 대하여](https://ictechgy.github.io/rxswift/take/)
   - [zip Operator에 대하여](https://ictechgy.github.io/rxswift/zip/)
   - [flatMap Operator에 대하여](https://ictechgy.github.io/rxswift/flatMap/)
+  - [Signal과 Driver, 그리고 error에 대하여](https://ictechgy.github.io/rxswift/error/)
 
 &nbsp;   
    
